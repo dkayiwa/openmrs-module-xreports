@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module configVersion="1.2">
+
+	<!-- Module Properties -->
+	<id>${project.parent.artifactId}</id>
+	<name>${project.parent.name}</name>
+	<version>${project.parent.version}</version>
+	<package>${project.parent.groupId}.${project.parent.artifactId}</package>
+	<author>dkayiwa</author>
+	<description>
+		${project.parent.description}
+	</description>
+	<updateURL>https://modules.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
+	<require_version>${openMRSVersion}</require_version>
+	<!-- / Module Properties -->
+
+	
+	<!-- Module Activator -->
+	<activator>${project.parent.groupId}.${project.parent.artifactId}.XReportsActivator</activator>
+	
+	<aware_of_modules>
+	    <aware_of_module>org.openmrs.module.uiframework</aware_of_module>
+	    <aware_of_module>org.openmrs.module.appui</aware_of_module>
+	    <aware_of_module>org.openmrs.module.emrapi</aware_of_module>
+	    <aware_of_module>org.openmrs.module.appframework</aware_of_module>
+	    <aware_of_module>org.openmrs.module.reporting</aware_of_module>
+	</aware_of_modules>
+	
+	<!-- Adds link to admin page -->
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
+	</extension>
+	
+	<dwr>
+		<allow>
+			<create creator="new" javascript="DwrReportDesignerService">
+				<param name="class" value="${project.parent.groupId}.${project.parent.artifactId}.web.dwr.DwrReportDesignerService"/>
+			</create>
+		</allow>
+	</dwr>
+	
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
+	<servlet>
+		<servlet-name>reportDownloadServlet</servlet-name>
+		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.ReportDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>reportUploadServlet</servlet-name>
+		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.ReportUploadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>exportPdfServlet</servlet-name>
+		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.ExportPdfServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>fileOpenServlet</servlet-name>
+		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.FileOpenServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>fileSaveServlet</servlet-name>
+		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.FileSaveServlet</servlet-class>
+	</servlet>
+	
+	<!-- Maps hibernate file's, if present -->
+	<mappingFiles>
+		XReport.hbm.xml
+		XReportGroup.hbm.xml	
+	</mappingFiles>
+
+	<!-- Internationalization -->
+	<!-- All message codes should start with ${project.parent.artifactId}. -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+
+</module>
+

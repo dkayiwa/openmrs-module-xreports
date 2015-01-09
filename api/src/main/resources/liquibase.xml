@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <!--
+        See http://www.liquibase.org/manual/home#available_database_refactorings
+        for a list of supported elements and attributes
+    -->
+    
+    <changeSet author="dkayiwa" id="table_xreports_report_group">
+    	<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="xreports_report_group"/></not>
+		</preConditions>
+		<comment>
+			Add xreports_report_group table
+		</comment>
+        <createTable tableName="xreports_report_group">
+            <column name="group_id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+            	<constraints nullable="false" unique="true" />
+            </column>
+            <column name="identifier" type="varchar(50)"/>
+            <column name="parent_group_id" type="int"/>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true"/></column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="parent_group_id" baseTableName="xreports_report_group" 
+        	constraintName="fk_parent_group_id_xreports_report_group" deferrable="false" initiallyDeferred="false" 
+        	referencedColumnNames="group_id" referencedTableName="xreports_report_group"/>
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xreports_report_group" 
+        	constraintName="fk_creator_xreports_report_group" deferrable="false" initiallyDeferred="false" 
+        	referencedColumnNames="user_id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xreports_report_group" 
+        	constraintName="fk_changed_by_xreports_report_group" deferrable="false" initiallyDeferred="false" 
+        	referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    
+    <changeSet author="dkayiwa" id="table_xreports_report">
+    	<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="xreports_report"/></not>
+		</preConditions>
+		<comment>
+			Add xreports_report table
+		</comment>
+        <createTable tableName="xreports_report">
+            <column name="report_id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+            	<constraints nullable="false" unique="true" />
+            </column>
+            <column name="identifier" type="varchar(50)"/>
+            <column name="xml" type="mediumtext"/>
+            <column name="external_report_uuid" type="varchar(50)"/>
+            <column name="group_id" type="int"/>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true"/></column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="xreports_report" 
+        	constraintName="fk_group_id_xreports_report" deferrable="false" initiallyDeferred="false" 
+        	referencedColumnNames="group_id" referencedTableName="xreports_report_group"/>
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xreports_report" 
+        	constraintName="fk_creator_xreports_report" deferrable="false" initiallyDeferred="false" 
+        	referencedColumnNames="user_id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xreports_report" 
+        	constraintName="fk_changed_by_xreports_report" deferrable="false" initiallyDeferred="false" 
+        	referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    
+</databaseChangeLog>

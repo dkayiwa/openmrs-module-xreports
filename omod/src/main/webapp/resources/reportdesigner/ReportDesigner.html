@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="gwt:module" content="purcreports"/>
+    <title>PurcReports ReportDesigner</title>
+     <script type="text/javascript" language="javascript" src="ReportDesigner/ReportDesigner.nocache.js"></script>
+   </head>
+  <body>
+    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+    <div id="purcreportsdesigner"></div>
+    <div id="title" style="visibility:hidden;">PurcReports ReportDesigner</div>
+    <div id="rubberBand"></div>
+    <!-- <div id="formId" style="visibility:hidden;">18</div> -->
+    <div id="readOnly" style="visibility:hidden;">false</div>
+   
+    <div id="undoRedoBufferSize" style="visibility:hidden;">100</div>
+    
+    <div id="defaultFontSize" style="visibility:hidden;">16</div>
+    <div id="defaultFontFamily" style="visibility:hidden;">Arial</div>
+    
+    <!-- <div id="entityIdName" style="visibility:hidden;">patientId</div> -->
+    <!-- <div id="formIdName" style="visibility:hidden;">formId</div> -->
+    
+    <!-- <div id="formDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xform&contentType=xml&</div> -->
+    <!-- <div id="formDefUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformUpload.form?target=xform&contentType=xml&</div> -->
+    <!-- <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div> -->
+    
+    <!-- <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&</div> -->
+    <!-- <div id="formDataUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformDataUpload.form</div> -->
+    <!-- <div id="afterSubmitUrlSuffix" style="visibility:hidden;">patientDashboard.form?</div> -->
+    <!-- <div id="externalSourceUrlSuffix" style="visibility:hidden;">widgetExternalSource?</div> -->
+    
+    <!-- <div id="loading"><img src="loading.gif">Loading app</div> -->
+    
+    <div id="labelEdit" style="visibility:hidden;width:auto;height:auto;position:absolute;"></div>
+    
+    <script language="javascript">
+    	var PurcformsText = {
+    	    	file: "File",
+    	    	tools: "Tools",
+    	    	help: "Help",
+    	    	open: "Open",
+    	    	save: "Save",
+    	    	saveAs: "Save As",
+    	    	cancel: "Cancel",
+
+    	    	close: "Close",
+
+    	    	refresh: "Refresh",
+    	    	deleteSelected: "Delete",
+    	    	cut: "Cut",
+    	    	copy: "Copy",
+    	    	paste: "Paste",
+    	    	
+    	    	addNew: "Add New",
+    	    	addNewChild: "Add New Child",
+    	    	moveUp: "Move Up",
+    	    	moveDown: "Move Down",
+    	    	
+    	    	format: "Format",
+    	    	options: "Options",
+
+    	    	helpContents: "Help Contents",
+    	    	about: "About",
+
+    	    	designItems: "Design Items",
+    	    	widgetProperties: "Widget Properties",
+    	    	properties: "Properties",
+
+    	    	text: "Text",
+    	    	helpText: "Help Text",
+
+    			addWidget: "Add Widget",
+    			selectAll: "Select All",
+    			
+    			label: "Label",
+    			groupBox: "Group Box",
+    			listBox: "ListBox",
+    			picture: "Picture",
+
+    			deleteWidgetPrompt: "Do you really want to delete the selected Widget (s)?",
+    			deleteTreeItemPrompt: "Do you really want to delete the selected item and all its children (if any) ?",
+    			selectDeleteItem: "Please first select the item to delete",
+
+    			noDataFound: "No data found.",
+
+    			reportSaveSuccess: "Template saved successfully",
+    			selectSaveItem: "Please select the item to save.",
+    			deleteAllWidgetsFirst: "Please first delete all the widgets.",
+    			deleteAllTabWidgetsFirst: "This tab has one or more widgets, please first delete them",
+    			cantDeleteAllTabs: "This tab cannot be deleted because there should be atleast one tab.",
+    			noFormId: "No formId or ",
+    			divFound: " div found",
+    			missingDataNode: "Missing data node for :",
+
+    			loadingTemplate: "Loading Template",
+    			savingTemplate: "Saving Template",
+    			refreshingForm: "Refreshing Template",
+
+    			count: "Count",
+    			unexpectedFailure: "Unexpected Failure",
+    			uncaughtException: "Uncaught exception: ",
+    			causedBy: "Caused by: ",
+    			openFile: "Open File",
+    			saveFileAs: "Save File As",
+
+    			alignLeft: "Align Left",
+    			alignRight: "Align Right",
+    			alignTop: "Align Top",
+    			alignBottom: "Align Bottom",
+    			makeSameWidth: "Make Same Width",
+    			makeSameHeight: "Make Same Height",
+    			makeSameSize: "Make Same Size",
+    			layoutXml: "Layout Xml",
+
+    		    text: "Text",
+    		    toolTip: "Tooltip",
+    		    childBinding: "Child Binding",
+    		    width: "Width",
+    		    height: "Height",
+    		    left: "Left",
+    		    top: "Top",
+    		    tabIndex: "Tab Index",
+    		    repeat: "Repeat",
+    		    externalSource: "External Source",
+    		    displayField: "Display Field",
+    		    valueField: "Value Field",
+    		    fontFamily: "Font Family",
+    		    foreColor: "Fore Color",
+    		    fontWeight: "Font Weight",
+    		    fontStyle: "Font Style",
+    		    fontSize: "Font Size",
+    		    textDecoration: "Text Decoration",
+    		    textAlign: "Text Align",
+    		    backgroundColor: "Background Color",
+    		    borderStyle: "Border Style",
+    		    borderWidth: "Border Width",
+    		    borderColor: "Border Color",
+    		    aboutMessage: "This is a report designer widget based on GWT",
+    		    more: "More",
+    		    requiredErrorMsg: "Please answer this required question.",
+    		    
+        		and: "and",
+        		deleteItemPrompt: "Do you really want to delete this item?",
+        		removeRowPrompt: "Do you really want to remove this row?",
+        		remove: "Remove",
+        		browse: "Browse",
+        		clear: "Clear",
+        		deleteItem: "Delete",
+
+        		groupWidgets: "Group Widgets",
+        		authenticationPrompt: "Please enter your user name and password",
+        		invalidUser: "Invalid UserName or Password",
+        		login: "Login",
+        		userName: "User Name",
+        		password: "Password",
+        		noSelection: "No Selection",
+           		print: "Print",
+           		pageSetup: "Page Setup",
+           		yes: "Yes",
+           		no: "No",
+           		search: "Search",
+           		processingMsg: "Please wait while processing...",
+           		length: "Length",
+           		clickForOtherQuestions: "< Click here for other questions >",
+           		ok: "Ok",
+           		undo: "Undo",
+           		redo: "Redo",
+           		loading: "loading",
+           		lockWidgets: "Lock",
+           		unLockWidgets: "Unlock",
+           		lockAllWidgets: "Lock All",
+           		unLockAllWidgets: "Unlock All",
+            	id: "ID",
+           		filterField: "Filter Field",
+          		logo: "Logo",
+          		table: "Table",
+          		horizontalLine: "Horizontal Line",
+           		verticalLine: "Vertical Line",
+           		addRowsBelow: "Add Rows Below",
+           		addRowsAbove: "Add Rows Above",
+           		addColumnsRight: "Add Columns Right",
+           		addColumnsLeft: "Add Columns Left",
+           		deleteColumn: "Delete Column",
+           		deleteRow: "Delete Row",
+           		numberOfRowsPrompt: "Please enter the number of rows",
+           		numberOfColumnsPrompt: "Please enter the number of columns",
+           		edit: "Edit",
+           		find: "Find",
+           		css: "CSS",
+           		bold: "Bold",
+           		italic: "Italic",
+           		underline: "Underline",
+           		mergeCells: "Merge Cells",
+           		rotate: "Rotate",
+           		page: "Page",
+           		insertPage: "Insert",
+           		deletePage: "Delete",
+           		exportPdf: "Export PDF"
+ 		  };
+
+		  function isUserAuthenticated(){
+			  return true; //Not expected to be used in the design mode.
+		  }
+
+		  function authenticateUser(username, password){
+			  return true; //Not expected to be used in the design mode.
+		  }
+
+		  function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
+
+		  }
+
+		  function initialize(){
+			  
+		  }
+		  
+    </script>
+    
+  </body>
+</html>

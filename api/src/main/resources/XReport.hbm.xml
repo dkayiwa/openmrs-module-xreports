@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.module.xreports">
+
+	<class name="XReport" table="xreports_report">
+
+		<id name="reportId" type="java.lang.Integer" column="report_id" unsaved-value="0">
+			<generator class="native">
+				<param name="sequence">xreports_report_report_id_seq</param>
+			</generator>
+		</id>
+
+		<discriminator column="report_id" insert="false" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" 
+			unique="true" not-null="true"/>
+			
+		<property name="name" type="java.lang.String" column="name"
+			unique="true" not-null="false" length="255" />
+			
+		<property name="identifier" type="java.lang.String" column="identifier" length="50" />
+		
+		<many-to-one name="group" class="XReportGroup" column="group_id" />
+	    		
+	    <property name="xml" type="java.lang.String" column="xml" />
+	    
+	    <property name="externalReportUuid" type="java.lang.String" column="external_report_uuid" />
+			
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />	
+	    <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+	    <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by"/>
+		<property name="dateChanged" type="java.util.Date" column="date_changed"/>
+		
+	</class>
+
+</hibernate-mapping>
