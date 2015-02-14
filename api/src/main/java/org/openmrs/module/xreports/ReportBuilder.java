@@ -1,5 +1,7 @@
 package org.openmrs.module.xreports;
 
+import java.net.URLDecoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +42,17 @@ public class ReportBuilder {
 	
 	private XReportsService service;
 	
+	DecimalFormat numberFormat;
+	DecimalFormat currencyFormat;
+	
 	public String build(String xml, String queryStr) throws Exception {
 		
 		service = Context.getService(XReportsService.class);
+		
+		numberFormat = new DecimalFormat(Context.getAdministrationService().getGlobalProperty("xreports.format.number", "###,###.###"));
+		currencyFormat = new DecimalFormat(Context.getAdministrationService().getGlobalProperty("xreports.format.currency", "###,###.### Shs"));
+		
+		queryStr = URLDecoder.decode(queryStr, "UTF-8");
 		
 		queryStr = queryStr.replace("contentType=xml&runner=true&", "");
 		int index = queryStr.indexOf("&formId=");
@@ -305,7 +315,18 @@ public class ReportBuilder {
 				if (suffix == null || value == null) {
 					suffix = "";
 				}
-				widgetNode.setAttribute(DesignItem.WIDGET_PROPERTY_TEXT, prefix + (value != null ? value.toString() : "") + suffix);
+				
+				String sValue = (value != null ? value.toString() : "");
+				String type = item.getAttribute("DataType");
+				if (value != null) {
+					if ("Number".equals(type)) {
+						sValue = numberFormat.format(value);
+					}
+					else if ("Currency".equals(type)) {
+						sValue = currencyFormat.format(value);
+					}
+				}
+				widgetNode.setAttribute(DesignItem.WIDGET_PROPERTY_TEXT, prefix + sValue + suffix);
 			}
 		}
 		else if (CUSTOM.equals(sourceType)) {

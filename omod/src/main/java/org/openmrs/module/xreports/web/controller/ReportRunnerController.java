@@ -1,5 +1,7 @@
 package org.openmrs.module.xreports.web.controller;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -21,7 +23,7 @@ public class ReportRunnerController {
 	@RequestMapping(method = RequestMethod.GET, value = "/module/xreports/reportRunner.form")
 	public String displayReport(@RequestParam(value = "reportId", required = false) Integer reportId,
 	                          @RequestParam(value = "groupId", required = false) Integer groupId,
-	                        HttpServletRequest request, HttpSession session, ModelMap map) {
+	                        HttpServletRequest request, HttpSession session, ModelMap map) throws Exception {
 		
         Object data =  session.getAttribute(ReportingConstants.OPENMRS_REPORT_DATA);;
 		
@@ -56,9 +58,9 @@ public class ReportRunnerController {
 		
 		url = "/moduleServlet/xreports/reportDownloadServlet?contentType=xml&runner=true&";
 		url += request.getQueryString() + "&";
-		map.put("reportDownloadServlet", url);
+		map.put("reportDownloadServlet", URLDecoder.decode(url, "UTF-8"));
 		
-		map.put("exportPdfServlet", "/moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&");
+		map.put("exportPdfServlet", URLDecoder.decode(("/moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&"), "UTF-8"));
 		
 		return null;
 	}

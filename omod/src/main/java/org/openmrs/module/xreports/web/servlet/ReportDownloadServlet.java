@@ -17,7 +17,21 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.reporting.dataset.DataSetColumn;
+import org.openmrs.module.reporting.dataset.definition.CohortCrossTabDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.CohortCrossTabDataSetDefinition.CohortDataSetColumn;
+import org.openmrs.module.reporting.dataset.definition.CohortIndicatorAndDimensionDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.CohortIndicatorAndDimensionDataSetDefinition.CohortIndicatorAndDimensionSpecification;
+import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition.CohortIndicatorAndDimensionColumn;
+import org.openmrs.module.reporting.dataset.definition.CohortsWithVaryingParametersDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.CohortsWithVaryingParametersDataSetDefinition.Column;
+import org.openmrs.module.reporting.dataset.definition.DataExportDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.LogicDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.RowPerObjectDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.SimpleIndicatorDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.SimpleIndicatorDataSetDefinition.SimpleIndicatorColumn;
 import org.openmrs.module.reporting.dataset.definition.SimplePatientDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -28,6 +42,7 @@ import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.util.WebUtil;
+import org.openmrs.reporting.export.ExportColumn;
 
 public class ReportDownloadServlet extends HttpServlet {
 	
@@ -99,10 +114,14 @@ public class ReportDownloadServlet extends HttpServlet {
 		int id = 1;
 		
 		String xml = "<DesignItems>";
+		
 		for (Map.Entry<String, Mapped<? extends DataSetDefinition>> e : reportDef.getDataSetDefinitions().entrySet()) {
 			DataSetDefinition def = e.getValue().getParameterizable();
+			
+			xml += "<DesignItem type='0' id='0" + DesignItem.NONE + "' name='" + def.getName() + "' description='" + def.getDescription() + "'>";
+			
 			if (def instanceof SimplePatientDataSetDefinition) {
-				xml += "<DesignItem type='0' id='0" + DesignItem.NONE + "' name='" + def.getName() + "' description='" + def.getDescription() + "'>";
+				
 				for (String property : ((SimplePatientDataSetDefinition) def).getPatientProperties()) {
 					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + property + "' binding='" + property + "' text='" + property + "' sourceType='Custom' />";
 				}
@@ -114,9 +133,51 @@ public class ReportDownloadServlet extends HttpServlet {
 					String property = StringEscapeUtils.escapeXml(identifier.getName());
 					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
 				}
-				xml += "</DesignItem>";
 			}
+			else if (def instanceof CohortIndicatorDataSetDefinition) {
+				for (CohortIndicatorAndDimensionColumn col : ((CohortIndicatorDataSetDefinition) def).getColumns()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof CohortCrossTabDataSetDefinition) {
+				for (CohortDataSetColumn col : ((CohortCrossTabDataSetDefinition) def).getDataSetColumns()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof CohortIndicatorAndDimensionDataSetDefinition) {
+				for (CohortIndicatorAndDimensionSpecification col : ((CohortIndicatorAndDimensionDataSetDefinition) def).getSpecifications()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getIndicatorNumber() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof CohortsWithVaryingParametersDataSetDefinition) {
+				for (Column col : ((CohortsWithVaryingParametersDataSetDefinition) def).getColumns()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof DataExportDataSetDefinition) {
+				for (ExportColumn col : ((DataExportDataSetDefinition) def).getDataExport().getColumns()) {
+					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof LogicDataSetDefinition) {
+				for (LogicDataSetDefinition.Column col : ((LogicDataSetDefinition) def).getColumns()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof RowPerObjectDataSetDefinition) {
+				for (DataSetColumn col : ((RowPerObjectDataSetDefinition) def).getDataSetColumns()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof SimpleIndicatorDataSetDefinition) {
+				for (SimpleIndicatorColumn col : ((SimpleIndicatorDataSetDefinition) def).getColumns()) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+				}
+			}
+			
+			xml += "</DesignItem>";
 		}
+		
 		xml += "</DesignItems>";
 		
 		return " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR " + xml;
