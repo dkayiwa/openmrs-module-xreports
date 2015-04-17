@@ -28,5 +28,6 @@
 	
 	<context:component-scan base-package="org.openmrs.module.xreports.web.controller" />
  
+ 	<bean class="org.openmrs.module.xreports.web.RefAppConfiguration" />
 		
 </beans>
