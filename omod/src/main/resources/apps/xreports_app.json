@@ -1,0 +1,23 @@
+[
+    {
+        "id": "xreports.app",
+        "description": "Provides XReports functionality",
+        "extensionPoints": [
+			{
+				"id": "xreports.apps",
+				"description": "Apps on the XReports Home Page"
+			}
+		],
+        "extensions": [
+            {
+                "id": "xreports.homepageLink",
+                "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+                "type": "link",
+                "label": "xreports.app.label",
+                "url": "xreports/dashboard.page",
+                "icon": "icon-file-alt",
+                "requiredPrivilege": "App: xreports.manage"
+            }
+        ]
+    }
+]

@@ -1,0 +1,17 @@
+[
+    {
+        "id": "xreports.runReports.app",
+        "description": "Runs Reports",
+        "extensions": [
+            {
+                "id": "xreports.runReports",
+                "extensionPointId": "xreports.apps",
+                "type": "link",
+                "label": "xreports.run.reports.app.label",
+                "url": "xreports/runReports.page",
+                "icon": "icon-file-alt",
+                "requiredPrivilege": "App: xreports.run"
+            }
+        ]
+    }
+]

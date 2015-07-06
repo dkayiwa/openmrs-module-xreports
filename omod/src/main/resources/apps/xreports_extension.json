@@ -1,0 +1,12 @@
+[
+    {
+        "id": "xreports.cfpd",
+        "extensionPointId": "patientDashboard.overallActions",
+        "type": "link",
+        "label": "xreports.app.label",
+        "url": "xreports/xreportsList.page?patientId={{patient.patientId}}",
+        "icon": "icon-file-alt",
+        "order": 100,
+        "requiredPrivilege": "App: xreports.run"
+    }
+]

@@ -39,7 +39,7 @@ public class DesignItem {
 	public static final String WIDGET_PROPERTY_TEXT = "Text";
 	public static final String WIDGET_PROPERTY_WIDTH = "Width";
 	public static final String WIDGET_PROPERTY_HEIGHT = "Height";
-	public static final String WIDGET_PROPERTY_TEXT_ALIGN = "TextAlign";
+	public static final String WIDGET_PROPERTY_TEXT_ALIGN = "textAlign";
 	
 	public static final String WIDGET_PROPERTY_FONT_WEIGHT = "fontWeight";
 	public static final String WIDGET_PROPERTY_FONT_FAMILY = "fontFamily";

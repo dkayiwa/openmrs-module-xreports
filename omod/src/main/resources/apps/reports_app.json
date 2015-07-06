@@ -1,0 +1,17 @@
+[
+    {
+        "id": "xreports.manageReports.app",
+        "description": "Manages Reports",
+        "extensions": [
+            {
+                "id": "xreports.manageReports",
+                "extensionPointId": "xreports.apps",
+                "type": "link",
+                "label": "xreports.manage.reports.app.label",
+                "url": "xreports/reports.page",
+                "icon": "icon-file-alt",
+                "requiredPrivilege": "App: xreports.manage"
+            }
+        ]
+    }
+]

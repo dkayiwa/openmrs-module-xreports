@@ -120,5 +120,10 @@ public class XReport extends BaseOpenmrsMetadata implements Serializable {
 	@Override
 	public void setId(Integer arg0) {
 		setReportId(arg0);
-	}	
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

@@ -79,4 +79,9 @@ public class XReportGroup extends BaseOpenmrsMetadata implements Serializable {
     public void setId(Integer arg0) {
 	    setGroupId(arg0);
     }
+    
+    @Override
+	public String toString() {
+		return getName();
+	}
 }

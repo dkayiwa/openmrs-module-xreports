@@ -74,7 +74,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public List<XReport> getReports() {
-		return sessionFactory.getCurrentSession().createQuery("from XReport").list();
+		return sessionFactory.getCurrentSession().createQuery("from XReport order by name").list();
 	}
 	
 	/**
@@ -83,7 +83,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public List<XReportGroup> getReportGroups() {
-		return sessionFactory.getCurrentSession().createQuery("from XReportGroup").list();
+		return sessionFactory.getCurrentSession().createQuery("from XReportGroup order by name").list();
 	}
 	
 	/**
@@ -91,11 +91,11 @@ public class HibernateXReportsDAO implements XReportsDAO {
      */
     @Override
     public List<XReport> getReports(Integer groupId) {
-    	Query query = sessionFactory.getCurrentSession().createQuery("from XReport where group = :group");
+    	Query query = sessionFactory.getCurrentSession().createQuery("from XReport where group = :group order by name");
 		query.setParameter("group", new XReportGroup(groupId));
 		
 		if (groupId == null) {
-			query = sessionFactory.getCurrentSession().createQuery("from XReport where group is null");
+			query = sessionFactory.getCurrentSession().createQuery("from XReport where group is null order by name");
 		}
 		
 		return query.list();
@@ -106,11 +106,11 @@ public class HibernateXReportsDAO implements XReportsDAO {
      */
     @Override
     public List<XReportGroup> getReportGroups(Integer groupId) {
-    	Query query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where parentGroup = :parentGroup");
+    	Query query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where parentGroup = :parentGroup order by name");
 		query.setParameter("parentGroup", new XReportGroup(groupId));
 		
 		if (groupId == null) {
-			query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where parentGroup is null");
+			query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where parentGroup is null order by name");
 		}
 		
 		return query.list();
