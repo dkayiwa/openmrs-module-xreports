@@ -50,7 +50,7 @@ public class ReportRunnerController {
 		
 		String url = "/module/reporting/reports/reportHistory.form";
 		if (data == null) {
-			data = "/module/xreports/runReports.list" + (groupId != null ? "?groupId=" + groupId : "");
+			url = "/module/xreports/runReports.list" + (groupId != null ? "?groupId=" + groupId : "");
 		}
 		map.put("closeUrl", request.getContextPath() + url);
 		

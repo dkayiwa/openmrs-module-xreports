@@ -1,5 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("xreports.run.reports.app.label") ]) 
+    
+    def breadcrumbMiddle = breadcrumbOverride ?: '';
 %>
 
 <script type="text/javascript">
@@ -8,7 +10,8 @@
         { label: "${ ui.message("xreports.app.label")}",
           link: "${ui.pageLink("xreports", "dashboard")}"
         },
-        { label: "${ ui.message("xreports.run.reports.app.label")}"}
+        { label: "${ ui.message("xreports.run.reports.app.label")}"},
+        ${ breadcrumbMiddle },
     ];
 </script>
 
@@ -29,36 +32,21 @@
 		
 	    <% reports.each { report -> %>
 		    <tr>
-		        <td>${report.name}</td>
+		        <td>
+		        	<a href="reportRunner.page?reportId=${report.reportId}<% if (param.groupId) { %> &groupId=${param.groupId} <% } %>&refApp=true">${report.name}</a>
+		        </td>
 		    </tr>
 	    <% } %>
 	    
 	    <% groups.each { group -> %>
 		    <tr>
-		        <td>${group.name}</td>
+		        <td>
+		        	<a href="runReport.form?groupId=${group.groupId}&refApp=true">${group.name}</a>
+		        </td>
 		    </tr>
 	    <% } %>
     </tbody>
 </table>
-
-<div id="allergyui-remove-allergy-dialog" class="dialog" style="display: none">
-    <div class="dialog-header">
-        <h3>${ ui.message("xreports.report.delete") }</h3>
-    </div>
-    <div class="dialog-content">
-        <ul>
-            <li class="info">
-                <span id="removeReportMessage"></span>
-            </li>
-        </ul>
-        <form method="POST" action="manageReports.page">
-            <input type="hidden" id="reportId" name="reportId" value=""/>
-            <input type="hidden" name="action" value="removeReport"/>
-            <button class="confirm right" type="submit">${ ui.message("general.yes") }</button>
-            <button class="cancel">${ ui.message("general.no") }</button>
-        </form>
-    </div>
-</div>
 
 <% if ((reports !=null && reports.size() > 0) || (reports !=null && reports.size() > 0) ) { %>
 ${ ui.includeFragment("uicommons", "widget/dataTable", [ object: "#reports",

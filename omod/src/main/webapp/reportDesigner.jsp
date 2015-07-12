@@ -280,7 +280,12 @@
            		page: "<spring:message code="xreports.page" />",
            		insertPage: "<spring:message code="xreports.insertPage" />",
            		deletePage: "<spring:message code="xreports.deletePage" />",
-           		exportPdf: "<spring:message code="xreports.exportPdf" />"
+           		exportPdf: "<spring:message code="xreports.exportPdf" />",
+           		openArchive: "<spring:message code="xreports.openArchive" />",
+    	    	saveArchive: "<spring:message code="xreports.saveArchive" />",
+           		selectArchive: "<spring:message code="xreports.selectArchive" />",
+           		archiveSaveSuccess: "<spring:message code="xreports.archiveSaveSuccess" />",
+           		deleteArchive: "<spring:message code="xreports.deleteArchive" />"
     	};
 
     	function isUserAuthenticated(){

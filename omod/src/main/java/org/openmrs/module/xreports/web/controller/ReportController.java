@@ -25,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ReportController {
 	
 	@RequestMapping(value = "/module/xreports/runReports.list", method = RequestMethod.GET)
-	public String showReport(ModelMap model, @RequestParam(required = false, value = "groupId") Integer groupId, HttpServletRequest request, HttpServletResponse response)
-	    throws Exception {
+	public String showReport(ModelMap model,
+			@RequestParam(required = false, value = "groupId") Integer groupId, 
+			@RequestParam(required = false, value = "refApp") String refApp,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		try {
 			WebUtil.authenticateInlineUser(request);
@@ -54,12 +56,19 @@ public class ReportController {
 		model.put("reports", reports);
 		model.put("groups", groups);
 		
-		return "module/xreports/runReportsList";
+		if (!"true".equals(refApp)) {
+			return "redirect:/xreports/runReports.page" + (groupId != null ? "?groupId=" + groupId : "");
+		}
+		else {
+			return "module/xreports/runReportsList";
+		}
 	}
 	
-	@RequestMapping(value = "/module/xreports/runReport.form", method = RequestMethod.GET)
+	@RequestMapping(value = {"/module/xreports/runReport.form", "/xreports/runReport.form"}, method = RequestMethod.GET)
 	public String showForm(@RequestParam(required = false, value = "reportId") Integer reportId,
-	                       @RequestParam(required = false, value = "groupId") Integer groupId, ModelMap model,
+	                       @RequestParam(required = false, value = "groupId") Integer groupId,
+	                       @RequestParam(required = false, value = "refApp") String refApp,
+	                       ModelMap model,
 	                       HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			WebUtil.authenticateInlineUser(request);
