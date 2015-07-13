@@ -33,6 +33,10 @@
 		font-size: 16px;
 	}
 	
+	#body-wrapper {
+		padding: 0px;
+	}
+	
 	table {
 		width: auto;
 	}
