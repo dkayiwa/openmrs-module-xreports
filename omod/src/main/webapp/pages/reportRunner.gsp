@@ -148,6 +148,9 @@
     
 <div id="formatXml" style="visibility:hidden;">${formatXml}</div>
 
+<div id="maximizeReport" style="visibility:hidden;">false</div>
+<div id="showToolbar" style="visibility:hidden;">false</div>
+
 <script language="javascript">
 	
 	var PurcformsText = {

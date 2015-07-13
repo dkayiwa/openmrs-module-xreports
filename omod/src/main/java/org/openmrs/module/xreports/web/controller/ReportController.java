@@ -56,7 +56,7 @@ public class ReportController {
 		model.put("reports", reports);
 		model.put("groups", groups);
 		
-		if (!"true".equals(refApp)) {
+		if ("true".equals(refApp)) {
 			return "redirect:/xreports/runReports.page" + (groupId != null ? "?groupId=" + groupId : "");
 		}
 		else {

@@ -58,7 +58,7 @@ public class ReportRunnerPageController {
 		
 		String url = "/module/reporting/reports/reportHistory.form";
 		if (data == null) {
-			url = "/module/xreports/runReports.list" + (groupId != null ? "?groupId=" + groupId : "");
+			url = "/xreports/runReports.page" + (groupId != null ? "?groupId=" + groupId : "");
 		}
 		model.put("closeUrl", request.getContextPath() + url);
 		
