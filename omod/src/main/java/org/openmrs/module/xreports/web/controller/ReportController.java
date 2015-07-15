@@ -99,6 +99,9 @@ public class ReportController {
 				return "redirect:/module/xreports/reportParameter.form?reportId=" + report.getReportId();
 			}
 		} else {
+			if ("true".equals(request.getParameter("refApp"))) {
+				return "redirect:/xreports/runReports.page?groupId=" + groupId;
+			}
 			return "redirect:/module/xreports/runReports.list?groupId=" + groupId;
 		}
 	}
