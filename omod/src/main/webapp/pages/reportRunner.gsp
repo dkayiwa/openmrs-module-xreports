@@ -1,7 +1,5 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("xreports.run.reports.app.label") ]) 
-    
-    def breadcrumbMiddle = breadcrumbOverride ?: '';
 %>
 
 <script type="text/javascript" src ='/${contextPath}/dwr/engine.js'></script>
@@ -15,9 +13,19 @@
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xreports.app.label")}",
           link: "${ui.pageLink("xreports", "dashboard")}"
-        },
-        { label: "${ ui.message("xreports.run.reports.app.label")}"},
-        ${ breadcrumbMiddle },
+        }
+        
+    	,{ label: "${ ui.message("xreports.run.reports.app.label")}",
+    	   link: "${ui.pageLink("xreports", "runReports")}"
+    	 }
+    	 
+    	 <% crumbs.each { crumb -> %>
+    	 	,{ label: "${crumb.name}",
+        	   link: "${ui.pageLink("xreports", "runReports", [groupId: crumb.value])}"
+        	 }
+    	 <% } %>
+    	 
+    	 ,{ label: "${formName}"}
     ];
 </script>
 

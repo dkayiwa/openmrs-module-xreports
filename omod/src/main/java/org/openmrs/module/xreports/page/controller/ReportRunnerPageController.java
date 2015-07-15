@@ -1,7 +1,9 @@
 package org.openmrs.module.xreports.page.controller;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.reporting.ReportingConstants;
 import org.openmrs.module.reporting.report.ReportData;
+import org.openmrs.module.xreports.NameValue;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.XReportsService;
@@ -70,7 +73,18 @@ public class ReportRunnerPageController {
 		
 		model.put("exportPdfServlet", URLDecoder.decode(("/moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&"), "UTF-8"));
 
-		model.addAttribute("breadcrumbOverride", generateBreadcrumbOverride(groupId, ui));
+		List<NameValue> crumbs = new ArrayList<NameValue>();
+		while (groupId != null) {
+			XReportGroup group = Context.getService(XReportsService.class).getReportGroup(groupId);
+			crumbs.add(0, new NameValue(group.getName(), group.getId().toString()));
+			XReportGroup parent = group.getParentGroup();
+			if (parent != null)
+				groupId = parent.getGroupId();
+			else
+				groupId = null;
+		}
+		
+		model.addAttribute("crumbs", crumbs);
 	}
 	
 	private XReport getXReport(ReportData reportData) {
@@ -78,47 +92,5 @@ public class ReportRunnerPageController {
 		report.setReportId(1);
 		report.setName("Some Rugayo");
 		return report;
-	}
-	
-	protected String generateBreadcrumbOverride(String breadcrumbOverrideLabel, String breadcrumbOverrideProvider,
-            String breadcrumbOverridePage, String appId, UiUtils ui) {
-		Map<String, Object> attrs = new HashMap<String,Object>();
-		if (StringUtils.isNotBlank(appId)) {
-			// TODO super hack that we add this twice, but the registration app seems to go with the model of calling the requesat param "appId", while other modules us "app"
-			attrs.put("appId", appId);
-			attrs.put("app", appId);
-		}
-		SimpleObject breadcrumbOverride = SimpleObject.create("label", ui.message(breadcrumbOverrideLabel), "link",
-		ui.pageLink(breadcrumbOverrideProvider, breadcrumbOverridePage, attrs));
-		return ui.toJson(breadcrumbOverride);
-	}
-	
-	protected String generateBreadcrumbOverride(Integer groupId, UiUtils ui) {
-		
-		if (groupId == null) {
-			return null;
-		}
-		
-		XReportGroup group = Context.getService(XReportsService.class).getReportGroup(groupId);
-		
-		String breadcrumbOverrideLabel = group.getName();
-		String breadcrumbOverrideProvider = "xreports";
-		String breadcrumbOverridePage = "runReports";
-
-		Map<String, Object> attrs = new HashMap<String,Object>();
-
-		SimpleObject breadcrumbOverride = new SimpleObject();
-		breadcrumbOverride.put("label", ui.message(breadcrumbOverrideLabel));
-		breadcrumbOverride.put("link", ui.pageLink(breadcrumbOverrideProvider, breadcrumbOverridePage, attrs));
-		
-		breadcrumbOverride.put("label2", ui.message(breadcrumbOverrideLabel));
-		breadcrumbOverride.put("link2", ui.pageLink(breadcrumbOverrideProvider, breadcrumbOverridePage, attrs));
-		
-		/*SimpleObject breadcrumbOverride = SimpleObject.create("label", ui.message(breadcrumbOverrideLabel), "link",
-		ui.pageLink(breadcrumbOverrideProvider, breadcrumbOverridePage, attrs),
-		"label", ui.message("test"), "link",
-		ui.pageLink(breadcrumbOverrideProvider, breadcrumbOverridePage, attrs));*/
-		
-		return ui.toJson(breadcrumbOverride);
 	}
 }

@@ -1,7 +1,5 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("xreports.run.reports.app.label") ]) 
-    
-    def breadcrumbMiddle = breadcrumbOverride ?: '';
 %>
 
 <script type="text/javascript">
@@ -9,9 +7,22 @@
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xreports.app.label")}",
           link: "${ui.pageLink("xreports", "dashboard")}"
-        },
-        { label: "${ ui.message("xreports.run.reports.app.label")}"},
-        ${ breadcrumbMiddle },
+        }
+        
+        <% if (crumbs.size() == 0) { %>
+        	,{ label: "${ ui.message("xreports.run.reports.app.label")}"}
+        <% } else { %>
+        	,{ label: "${ ui.message("xreports.run.reports.app.label")}",
+        	   link: "${ui.pageLink("xreports", "runReports")}"
+        	 }
+        	 
+        	 <% crumbs.each { crumb -> %>
+        	 	,{ label: "${crumb.name}",
+	        	   link: "${ui.pageLink("xreports", "runReports", [groupId: crumb.value])}"
+	        	 }
+        	 <% } %>
+        	 
+        <% } %>
     ];
 </script>
 
@@ -33,7 +44,7 @@
 	    <% reports.each { report -> %>
 		    <tr>
 		        <td>
-		        	<a href="reportRunner.page?reportId=${report.reportId}<% if (param.groupId) { %> &groupId=${param.groupId} <% } %>&refApp=true">${report.name}</a>
+		        	<a href="reportRunner.page?reportId=${report.reportId}<% if (param.groupId) { %>&groupId=${param.groupId[0]}<% } %>&refApp=true">${report.name}</a>
 		        </td>
 		    </tr>
 	    <% } %>
