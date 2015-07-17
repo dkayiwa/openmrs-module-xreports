@@ -79,9 +79,11 @@ public class ReportDownloadServlet extends HttpServlet {
 			XReport report = Context.getService(XReportsService.class).getReport(reportId);
 			String xml = report.getXml();
 			
+			System.out.println("aaaaaaaaaaaaaaa........................bbbbbbbbbbbb");
+			
 			if ("true".equals(request.getParameter("runner"))) {
 				if (StringUtils.isNotBlank(xml)) {
-					xml = new ReportBuilder().build(xml, request.getQueryString());
+					xml = new ReportBuilder().build(xml, request.getQueryString(), report);
 				}
 			}
 			else {

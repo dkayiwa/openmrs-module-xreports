@@ -14,6 +14,10 @@ import javax.script.ScriptEngineManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.report.ReportData;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,7 +49,7 @@ public class ReportBuilder {
 	DecimalFormat numberFormat;
 	DecimalFormat currencyFormat;
 	
-	public String build(String xml, String queryStr) throws Exception {
+	public String build(String xml, String queryStr, XReport report) throws Exception {
 		
 		service = Context.getService(XReportsService.class);
 		
@@ -71,24 +75,37 @@ public class ReportBuilder {
 		}
 		
 		Document doc = DOMUtil.fromString2Doc(xml);
-
-		parameters = buildParameters(doc);
-		buildParameterSql();
 		
-		processDesignItemValues(doc);
-		
-		NodeList nodes = doc.getDocumentElement().getElementsByTagName(DesignItem.NAME_PT_POS);
-		for (index = 0; index < nodes.getLength(); index++) {
-			Node node = nodes.item(index);
-			buildPtPosItems(doc, (Element)node);
+		String uuid = report.getExternalReportUuid();
+		if (StringUtils.isNotBlank(uuid)) {
+			ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
+			ReportDefinition reportDef = rds.getDefinitionByUuid(uuid);
+			ReportData reportData = rds.evaluate(reportDef, new EvaluationContext());
+			displayReportData(reportData, doc);
+		}
+		else {
+			parameters = buildParameters(doc);
+			buildParameterSql();
+			
+			processDesignItemValues(doc);
+			
+			NodeList nodes = doc.getDocumentElement().getElementsByTagName(DesignItem.NAME_PT_POS);
+			for (index = 0; index < nodes.getLength(); index++) {
+				Node node = nodes.item(index);
+				buildPtPosItems(doc, (Element)node);
+			}
+			
+			loadCustomItems();
+			
+			fieldValues.clear();
+			customItems.clear();
 		}
 		
-		loadCustomItems();
-		
-		fieldValues.clear();
-		customItems.clear();
-		
 		return DOMUtil.doc2String(doc);
+	}
+	
+	private void displayReportData(ReportData reportData, Document doc) {
+		
 	}
 	
 	private void processDesignItemValues(Document doc) throws Exception {

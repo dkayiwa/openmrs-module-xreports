@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xreports.ReportBuilder;
+import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.PdfDocument;
@@ -49,7 +50,8 @@ public class ExportPdfServlet extends HttpServlet {
 			response.setHeader("Cache-Control", "no-store");
 			response.setCharacterEncoding(XReportsConstants.DEFAULT_CHARACTER_ENCODING);
 			
-			new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString()), request.getRealPath(""));
+			XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(formId));
+			new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report), request.getRealPath(""));
 		}
 		catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
