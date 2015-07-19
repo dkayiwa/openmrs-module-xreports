@@ -23,6 +23,7 @@
 	    <tr>
 	        <th>${ ui.message("xreports.name")}</th>
 	        <th>${ ui.message("xreports.identifier")}</th>
+	        <th>${ ui.message("xreports.parent")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
 	    </tr>
     </thead>
@@ -32,6 +33,7 @@
 		    <tr>
 		        <td>${group.name}</td>
 		        <td>${group.identifier}</td>
+		        <td> <% if (group.parentGroup != null) { %> ${group.parentGroup.name} <% } %> </td>
 		        <td>
 					<i class="icon-pencil edit-action" title="${ ui.message("coreapps.edit") }"
 						onclick="location.href='${ ui.pageLink("xreports", "reportGroup", [groupId:group.id]) }'"></i>
@@ -42,7 +44,7 @@
     </tbody>
 </table>
 
-<div id="allergyui-remove-allergy-dialog" class="dialog" style="display: none">
+<div id="xreports-remove-group-dialog" class="dialog" style="display: none">
     <div class="dialog-header">
         <h3>${ ui.message("xreports.reportGroup.delete") }</h3>
     </div>
@@ -52,7 +54,7 @@
                 <span id="removeGroupMessage"></span>
             </li>
         </ul>
-        <form method="POST" action="manageReportGroups.page">
+        <form method="POST" action="reportGroups.page">
             <input type="hidden" id="groupId" name="groupId" value=""/>
             <input type="hidden" name="action" value="removeGroup"/>
             <button class="confirm right" type="submit">${ ui.message("general.yes") }</button>
@@ -70,7 +72,7 @@
 	jq(document).ready( function() {
 	    
 	    removeGroupDialog = emr.setupConfirmationDialog({
-	        selector: '#allergyui-remove-allergy-dialog',
+	        selector: '#xreports-remove-group-dialog',
 	        actions: {
 	            cancel: function() {
 	            	removeGroupDialog.close();

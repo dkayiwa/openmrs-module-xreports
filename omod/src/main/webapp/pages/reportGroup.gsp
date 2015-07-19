@@ -12,7 +12,7 @@
           link: "${ui.pageLink("xreports", "dashboard")}"
         },
         { label: "${ ui.message("xreports.manage.groups.app.label")}",
-          link: "${ui.pageLink("xreports", "manageReportGroups")}"
+          link: "${ui.pageLink("xreports", "reportGroups")}"
         },
         { label: "${ ui.message("xreports.reportGroup.add.title")}"}
     ];
@@ -21,28 +21,35 @@
 <form method="POST" action="reportGroup.page">
 
     <p>
-        <label for="groupname">
+        <label for="groupName">
             ${ui.message("general.name")}
         </label>
-        <input id="groupname" class="required" name="groupname"></input>
+        <input id="groupName" class="required" name="groupName" <% if (group.name != null) { %> value="${group.name}" <% } %> />
     </p>
     
     <p>
         <label for="identifier">
             ${ui.message("xreports.identifier")}
         </label>
-        <input id="identifier" name="identifier"></input>
+        <input id="identifier" name="identifier" <% if (group.identifier != null) { %> value="${group.identifier}" <% } %> />
     </p>
     
     <p>
         <label for="parentGroup">
             ${ui.message("xreports.reportGroup.parentGroup")}
         </label>
-        <select id="identifier" name="parentGroup"></select>
+        <select id="parentGroup" name="parentGroup"  <% if (group.parentGroup != null) { %> value="${group.parentGroup.groupId}" <% } %> >
+        	<option></option>
+        	<% groups.each { grp -> %>
+	        	<option value="${grp.groupId}" <% if (group.parentGroup != null && grp.groupId == group.parentGroup.groupId) { %> selected="selected" <% } %> >
+	        		${grp.name}
+	        	</option>
+        	<% } %>
+        </select>
     </p>
 
-    <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/manageReportGroups.page'" />
+    <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/reportGroups.page'" />
     <input type="submit" class="confirm right" id="save-button" value="${ ui.message("general.save") }" />
-
+	<input type="hidden" id="groupId" name="groupId" <% if (group.groupId != null) { %> value="${group.groupId}" <% } %> />
 
 </form>

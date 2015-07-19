@@ -142,6 +142,13 @@
             <version>1.0</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uicommons-api</artifactId>
+            <version>1.6</version>
+            <scope>provided</scope>
+        </dependency>
 
 	</dependencies>
 

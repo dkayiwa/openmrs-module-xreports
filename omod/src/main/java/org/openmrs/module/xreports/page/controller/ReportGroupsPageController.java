@@ -11,11 +11,15 @@ package org.openmrs.module.xreports.page.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.XReportsService;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public class ReportGroupsPageController {
 
@@ -25,5 +29,19 @@ public class ReportGroupsPageController {
 		
 		List<XReportGroup> groups = Context.getService(XReportsService.class).getReportGroups();
 		model.addAttribute("groups", groups);
+	}
+	
+	public String post(PageModel model,
+			@RequestParam(value = "groupId") Integer groupId,
+            @RequestParam(value = "action") String action,
+            HttpSession session, UiUtils ui) {
+
+		if (action.equals("removeGroup")) {
+			XReportsService service = Context.getService(XReportsService.class);
+			XReportGroup group = service.getReportGroup(groupId);
+			Context.getService(XReportsService.class).deleteReportGroup(group);
+		}
+	
+		return "redirect:/xreports/reportGroups.page";
 	}
 }

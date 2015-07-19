@@ -21,28 +21,35 @@
 <form method="POST" action="report.page">
 
     <p>
-        <label for="reportname">
+        <label for="reportName">
             ${ui.message("general.name")}
         </label>
-        <input id="reportname" class="required" name="reportname"></input>
+        <input id="reportName" class="required" name="reportName" <% if (report.name != null) { %> value="${report.name}" <% } %> />
     </p>
     
     <p>
         <label for="identifier">
             ${ui.message("xreports.identifier")}
         </label>
-        <input id="identifier" name="identifier"></input>
+        <input id="identifier" name="identifier" <% if (report.identifier != null) { %> value="${report.identifier}" <% } %> />
     </p>
     
     <p>
         <label for="group">
             ${ui.message("xreports.report.group")}
         </label>
-        <select id="identifier" name="group"></select>
+        <select id="group" name="group"  <% if (report.group != null) { %> value="${report.group.groupId}" <% } %> >
+        	<option></option>
+        	<% groups.each { grp -> %>
+	        	<option value="${grp.groupId}" <% if (report.group != null && grp.groupId == report.group.groupId) { %> selected="selected" <% } %> >
+	        		${grp.name}
+	        	</option>
+        	<% } %>
+        </select>
     </p>
 
-    <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/manageReports.page'" />
+    <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/reports.page'" />
     <input type="submit" class="confirm right" id="save-button" value="${ ui.message("general.save") }" />
-
+	<input type="hidden" id="reportId" name="reportId" <% if (report.reportId != null) { %> value="${report.reportId}" <% } %> />
 
 </form>

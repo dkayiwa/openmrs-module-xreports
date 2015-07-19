@@ -52,19 +52,16 @@ public class ReportGroupFormController {
 	}
 	
 	@RequestMapping(value = "/module/xreports/group.form", method = RequestMethod.GET)
-	public String showForm(@RequestParam(required = false, value = "groupId") Integer groupId,
-	                       @ModelAttribute("group") XReportGroup group, ModelMap model) {
+	public String showForm(@ModelAttribute("group") XReportGroup group, ModelMap model) {
 		if (!Context.isAuthenticated()) {
 			return null;
 		}
 		
-		List<XReportGroup> groups = null;
-		if (groupId != null) {
-			//groups = service.getByFieldsNotEqual(new String[] { "groupId" }, new Integer[] { groupId }, null,
-			//    new String[] { "name" }, null, null);
-		} else {
-			groups = Context.getService(XReportsService.class).getReportGroups();
+		List<XReportGroup> groups = Context.getService(XReportsService.class).getReportGroups();
+		if (group != null) {
+			groups.remove(group);
 		}
+		
 		model.put("groups", groups);
 		
 		// not using the default view name because I'm converting from an existing form
