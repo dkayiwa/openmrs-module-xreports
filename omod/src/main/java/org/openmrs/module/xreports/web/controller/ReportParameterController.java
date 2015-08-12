@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xreports.ReportBuilder;
 import org.openmrs.module.xreports.ReportParameter;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.api.XReportsService;
+import org.openmrs.module.xreports.web.ReportBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;

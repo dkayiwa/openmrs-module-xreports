@@ -37,7 +37,7 @@ public class LayoutConstants {
 	public static final String PROPERTY_FILTERFIELD = "FilterField";
 	public static final String PROPERTY_TABINDEX = "TabIndex";
 	public static final String PROPERTY_REPEATED = "Repeated";
-	public static final String PROPERTY_TEXT_ALIGN = "TextAlign";
+	public static final String PROPERTY_TEXT_ALIGN = "textAlign";
 	public static final String PROPERTY_HEADER_LABEL = "HeaderLabel";
 	
 	public static final String PROPERTY_FONT_WEIGHT = "fontWeight";

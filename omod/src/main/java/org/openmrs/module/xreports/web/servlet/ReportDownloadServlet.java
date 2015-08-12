@@ -37,10 +37,10 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.xreports.DesignItem;
-import org.openmrs.module.xreports.ReportBuilder;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
+import org.openmrs.module.xreports.web.ReportBuilder;
 import org.openmrs.module.xreports.web.util.WebUtil;
 import org.openmrs.reporting.export.ExportColumn;
 

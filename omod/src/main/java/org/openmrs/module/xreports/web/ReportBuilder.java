@@ -1,8 +1,9 @@
-package org.openmrs.module.xreports;
+package org.openmrs.module.xreports.web;
 
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,17 @@ import javax.script.ScriptEngineManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.dataset.DataSet;
+import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.xreports.DOMUtil;
+import org.openmrs.module.xreports.DesignItem;
+import org.openmrs.module.xreports.NameValue;
+import org.openmrs.module.xreports.ReportParameter;
+import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,6 +45,9 @@ public class ReportBuilder {
 	public static final String BINDING = "Binding";
 	public static final String PARAMETERS = "parameters";
 	
+	public static final int SECOND_POSITION = 110;
+	public static final int SECOND_PAGE = 111;
+	
 	private Map<String, String> fieldValues = new HashMap<String, String>();
 	private Map<Element, Element> customItems = new HashMap<Element, Element>();
 	
@@ -46,8 +57,12 @@ public class ReportBuilder {
 	
 	private XReportsService service;
 	
-	DecimalFormat numberFormat;
-	DecimalFormat currencyFormat;
+	private DecimalFormat numberFormat;
+	private DecimalFormat currencyFormat;
+	
+	private int currentIndex = 0;
+	
+	private Map<String, String> fieldMapping = new HashMap<String, String>();
 	
 	public String build(String xml, String queryStr, XReport report) throws Exception {
 		
@@ -100,12 +115,276 @@ public class ReportBuilder {
 			fieldValues.clear();
 			customItems.clear();
 		}
-		
+
+		System.out.println(DOMUtil.doc2String(doc));
 		return DOMUtil.doc2String(doc);
 	}
 	
-	private void displayReportData(ReportData reportData, Document doc) {
+	private void displayReportData(ReportData reportData, Document doc) throws Exception {
+		String TYPE_XPOS = "2";
+		NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItem");
+		for (int index = 0; index < nodes.getLength(); index++) {
+			Element node = (Element)nodes.item(index);
+			if (TYPE_XPOS.equals(node.getAttribute("type"))) {
+				fieldMapping.put(node.getAttribute("id"), node.getAttribute("binding"));
+			}
+		}
 		
+		buildXPosItems(reportData, doc);
+	}
+	
+	private void buildXPosItems(ReportData reportData, Document doc) throws Exception {
+		
+		Element root = doc.getDocumentElement();
+		
+		int pageHeight = 800;
+		int pageMargin = 50;
+		int noPages = 1;
+
+		String s = root.getAttribute("PageHeight");
+		if (s != null && s.trim().length() > 0) {
+			pageHeight = Integer.parseInt(s);
+		}
+		s = root.getAttribute("PageMargin");
+		if (s != null && s.trim().length() > 0) {
+			pageMargin = Integer.parseInt(s);
+		}
+		
+		Element tableElement = null;
+		Element lineElement = null;
+		List<Element> verticalLines = new ArrayList<Element>();
+		int orgLineY = 0;
+		NodeList nodes = doc.getDocumentElement().getElementsByTagName(DesignItem.NAME_ITEM);
+		for (int index = 0; index < nodes.getLength(); index++) {
+			Element element = (Element) nodes.item(index);
+			String widgetType = element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE);
+			if (LayoutConstants.TYPE_HORIZONTAL_LINE.equals(widgetType)) {
+				String top = element.getAttribute(LayoutConstants.PROPERTY_TOP);
+				orgLineY = Integer.parseInt(top.substring(0, top.length() - 2));
+				tableElement = (Element) element.getParentNode();
+				lineElement = element;
+			}
+			else if (LayoutConstants.TYPE_VERTICAL_LINE.equals(widgetType)) {
+				verticalLines.add(element);
+			}
+		}
+		
+		if (tableElement != null) {
+			
+			Element tableParent = (Element)tableElement.getParentNode();
+			Element cloneTableElement = (Element)tableElement.cloneNode(true);
+
+			s = tableElement.getAttribute(LayoutConstants.PROPERTY_HEIGHT);
+			int orgTableHeight = Integer.parseInt(s.substring(0, s.length() - 2));
+			
+			s = tableElement.getAttribute(LayoutConstants.PROPERTY_LEFT);
+			int tableLeft = Integer.parseInt(s.substring(0, s.length() - 2));
+			
+			s = tableElement.getAttribute(LayoutConstants.PROPERTY_TOP);
+			int tableTop = Integer.parseInt(s.substring(0, s.length() - 2));
+			
+			s = doc.getDocumentElement().getAttribute(LayoutConstants.PROPERTY_HEIGHT);
+			int docHeight = (Integer.parseInt(s.substring(0, s.length() - 2)));
+			
+			int pageBottom = pageHeight - pageMargin;
+			
+			int increment = orgTableHeight - orgLineY;
+			
+			//docHeight -= (tableLeft + tableTop + increment);
+			
+			Integer secondPage = null;
+			nodes = doc.getElementsByTagName(DesignItem.NAME_PT_POS);
+			if (nodes != null && nodes.getLength() > 0) {
+				Element ptPosItem = (Element)nodes.item(0);
+				nodes = ptPosItem.getElementsByTagName(DesignItem.NAME_ITEM);
+				for (int i = 0; i < nodes.getLength(); i++) {
+					Element element = (Element) nodes.item(i);
+					s = element.getAttribute(LayoutConstants.PROPERTY_ID);
+					if ((SECOND_PAGE + "").equals(s)) {
+						s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+						secondPage = Integer.parseInt(s.substring(0, s.length() - 2));
+						break;
+					}
+				}
+				
+				if (ptPosItem != null) {
+					ptPosItem.getParentNode().removeChild(ptPosItem);
+				}
+			}
+			
+			if (secondPage == null) {
+				secondPage = pageHeight + 50;
+			}
+				
+			Element xposItem = null;
+			nodes = tableElement.getElementsByTagName(DesignItem.NAME_XPOS);
+			if (nodes != null && nodes.getLength() > 0) {
+				xposItem = (Element)nodes.item(0);
+				nodes = xposItem.getElementsByTagName(DesignItem.NAME_ITEM);
+			}
+
+			int tableHeight = orgTableHeight;
+			int lineY = orgLineY;
+			int currentY = tableTop + lineY;
+			int currentTableIndex = 0;
+			
+			String dataSetName = reportData.getDataSets().keySet().iterator().next();
+			DataSet ds = reportData.getDataSets().get(dataSetName);
+			for (DataSetRow row : ds) {
+				currentTableIndex++;
+				
+				if (++currentIndex > 1) {
+					currentY += increment;
+					lineY += increment;
+					tableHeight += increment;
+					
+					if (currentY > pageBottom) {
+						tableHeight -= increment;
+						
+						s = tableHeight + "px";
+						tableElement.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
+						for (Element line : verticalLines) {
+							line.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
+						}
+						
+						currentTableIndex = 1;
+						
+						lineY = orgLineY;
+						tableHeight = orgTableHeight;
+						tableTop = pageBottom + (secondPage - pageHeight) + pageMargin;
+						currentY = tableTop + lineY;
+						noPages++;
+						pageBottom = (noPages * pageHeight) - pageMargin;;
+						
+						tableElement = (Element)cloneTableElement.cloneNode(true);
+						tableElement.setAttribute(LayoutConstants.PROPERTY_TOP, tableTop + "px");
+						tableParent.appendChild(tableElement);
+						
+						verticalLines.clear();
+						NodeList nds = tableElement.getElementsByTagName(DesignItem.NAME_ITEM);
+						for (int index = 0; index < nds.getLength(); index++) {
+							Element element = (Element) nds.item(index);
+							String widgetType = element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE);
+							if (LayoutConstants.TYPE_VERTICAL_LINE.equals(widgetType)) {
+								verticalLines.add(element);
+							}
+						}
+					}
+					
+					if (currentTableIndex > 1) {
+						//Add separator horizontal line
+						Element item = doc.createElement(DesignItem.NAME_ITEM);
+						tableElement.appendChild(item);
+						
+						copyAttributes(item, lineElement);
+						item.setAttribute(LayoutConstants.PROPERTY_TOP, lineY + "px");
+						item.setAttribute(LayoutConstants.PROPERTY_WIDGETTYPE, LayoutConstants.TYPE_HORIZONTAL_LINE);
+					}
+				}
+				
+				//Add xpos items for the current row
+				for (int i = 0; i < nodes.getLength(); i++) {
+					Element element = (Element) nodes.item(i);
+					
+					s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+					int ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+					ypos += (increment * (currentTableIndex - 1));
+					
+					Element item = doc.createElement(DesignItem.NAME_ITEM);
+					tableElement.appendChild(item);
+					
+					copyAttributes(item, element);
+					item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
+					item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
+					item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
+				}
+			}
+			
+			//Set vertical lines height
+			s = tableHeight + "px";
+			tableElement.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
+			for (Element line : verticalLines) {
+				line.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
+			}
+			
+			if (xposItem != null) {
+				xposItem.getParentNode().removeChild(xposItem);
+			}
+		}
+		else {
+			Integer secondPos = null;
+			nodes = doc.getElementsByTagName(DesignItem.NAME_PT_POS);
+			if (nodes != null && nodes.getLength() > 0) {
+				Element ptPosItem = (Element)nodes.item(0);
+				nodes = ptPosItem.getElementsByTagName(DesignItem.NAME_ITEM);
+				for (int i = 0; i < nodes.getLength(); i++) {
+					Element element = (Element) nodes.item(i);
+					s = element.getAttribute(LayoutConstants.PROPERTY_ID);
+					if ((SECOND_POSITION + "").equals(s)) {
+						s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+						secondPos = Integer.parseInt(s.substring(0, s.length() - 2));
+						break;
+					}
+				}
+				
+				if (ptPosItem != null) {
+					ptPosItem.getParentNode().removeChild(ptPosItem);
+				}
+			}
+			
+			
+			nodes = doc.getElementsByTagName(DesignItem.NAME_XPOS);
+			if (nodes != null && nodes.getLength() > 0) {
+				Element xposItem = (Element)nodes.item(0);
+				nodes = xposItem.getElementsByTagName(DesignItem.NAME_ITEM);
+				
+				int pageBottom = pageHeight - pageMargin;
+				int ypos = -1;
+				int increment = 30;
+				
+				String dataSetName = reportData.getDataSets().keySet().iterator().next();
+				DataSet ds = reportData.getDataSets().get(dataSetName);
+				for (DataSetRow row : ds) {
+					currentIndex++;
+					
+					if (ypos != -1) {
+						ypos += increment;
+					}
+					
+					if (ypos > pageBottom) {
+						ypos = (noPages * pageHeight) + pageMargin;
+						noPages++;
+						pageBottom = (noPages * pageHeight) - pageMargin;
+					}
+					
+					for (int i = 0; i < nodes.getLength(); i++) {
+						Element element = (Element) nodes.item(i);
+						
+						if (ypos == -1) {
+							s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+							ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+							if (secondPos != null) {
+								increment = secondPos - ypos;
+							}
+						}
+						
+						Element item = doc.createElement(DesignItem.NAME_ITEM);
+						doc.getDocumentElement().appendChild(item);
+						
+						copyAttributes(item, element);
+						item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
+						item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
+						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
+					}
+				}
+				
+				if (xposItem != null) {
+					xposItem.getParentNode().removeChild(xposItem);
+				}
+			}
+		}
+		
+		root.setAttribute("Height", (pageHeight * noPages) + "px");
 	}
 	
 	private void processDesignItemValues(Document doc) throws Exception {
@@ -438,5 +717,38 @@ public class ReportBuilder {
 	
 	public List<ReportParameter> getParameters() {
 		return parameters;
+	}
+	
+	private Element copyAttributes(Element item, Element element) {
+		item.setAttribute(LayoutConstants.PROPERTY_WIDGETTYPE, LayoutConstants.TYPE_LABEL);
+		item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(LayoutConstants.PROPERTY_LEFT));
+		item.setAttribute(LayoutConstants.PROPERTY_FONT_FAMILY, element.getAttribute(LayoutConstants.PROPERTY_FONT_FAMILY));
+		item.setAttribute(LayoutConstants.PROPERTY_FONT_SIZE, element.getAttribute(LayoutConstants.PROPERTY_FONT_SIZE));
+		item.setAttribute(LayoutConstants.PROPERTY_COLOR, element.getAttribute(LayoutConstants.PROPERTY_COLOR));
+		item.setAttribute(LayoutConstants.PROPERTY_WIDTH, element.getAttribute(LayoutConstants.PROPERTY_WIDTH));
+		item.setAttribute(LayoutConstants.PROPERTY_HEIGHT, element.getAttribute(LayoutConstants.PROPERTY_HEIGHT));
+		item.setAttribute(LayoutConstants.PROPERTY_BORDER_STYLE, element.getAttribute(LayoutConstants.PROPERTY_BORDER_STYLE));
+		item.setAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH, element.getAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH));
+		item.setAttribute(LayoutConstants.PROPERTY_FONT_WEIGHT, element.getAttribute(LayoutConstants.PROPERTY_FONT_WEIGHT));
+		item.setAttribute(LayoutConstants.PROPERTY_BORDER_COLOR, element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR));
+		item.setAttribute(LayoutConstants.PROPERTY_FONT_STYLE, element.getAttribute(LayoutConstants.PROPERTY_FONT_STYLE));
+		item.setAttribute(LayoutConstants.PROPERTY_TEXT_DECORATION, element.getAttribute(LayoutConstants.PROPERTY_TEXT_DECORATION));
+		item.setAttribute(LayoutConstants.PROPERTY_TEXT_ALIGN, element.getAttribute(LayoutConstants.PROPERTY_TEXT_ALIGN));
+		item.setAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR, element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR));
+		return item;
+	}
+	
+	public String getValue(String designItemId, DataSetRow row) {
+		String binding = fieldMapping.get(designItemId);
+		if (binding != null) {
+			Object value = row.getColumnValue(binding);
+			if (value instanceof Date) {
+				return Context.getDateFormat().format(value);
+			}
+			if (value != null) {
+				return value.toString();
+			}
+		}
+		return null;
 	}
 }

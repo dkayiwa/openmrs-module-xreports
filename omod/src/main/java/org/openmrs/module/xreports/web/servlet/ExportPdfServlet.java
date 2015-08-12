@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xreports.ReportBuilder;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.PdfDocument;
+import org.openmrs.module.xreports.web.ReportBuilder;
 
 public class ExportPdfServlet extends HttpServlet {
 	
