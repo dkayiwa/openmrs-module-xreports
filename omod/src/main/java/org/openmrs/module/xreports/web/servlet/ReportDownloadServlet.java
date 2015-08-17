@@ -95,7 +95,7 @@ public class ReportDownloadServlet extends HttpServlet {
 				}
 			}
 			
-			if (xml == null) {
+			if (StringUtils.isBlank(xml)) {
 				xml = " ";
 			}
 			

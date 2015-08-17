@@ -30,7 +30,8 @@ public class ReportDesignerController {
 		map.put("defaultGroupBoxHeaderBgColor", color);
 		map.put("showSubmitSuccessMsg", service.getGlobalProperty("xreports.showSubmitSuccessMsg", "false"));
 		map.put("undoRedoBufferSize", service.getGlobalProperty("xreports.undoRedoBufferSize", "100"));
-		;
-		map.put("closeUrl", request.getContextPath() + "/module/xreports/report.form?reportId=" + reportId);
+		
+		boolean refapp = "true".equals(request.getParameter("refApp"));
+		map.put("closeUrl", request.getContextPath() + (refapp ? "/xreports/reports.page" : "/module/xreports/report.form") + "?reportId=" + reportId);
 	}
 }

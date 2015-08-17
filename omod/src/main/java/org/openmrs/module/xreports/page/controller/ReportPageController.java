@@ -1,16 +1,14 @@
 package org.openmrs.module.xreports.page.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.xreports.XReport;
-import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
@@ -26,11 +24,10 @@ public class ReportPageController {
 		if (reportId != null) {
 			report = Context.getService(XReportsService.class).getReport(reportId);
 		}
-		
-		List<XReportGroup> groups = Context.getService(XReportsService.class).getReportGroups();
 
 		model.addAttribute("report", report);
-		model.put("groups", groups);
+		model.put("groups", Context.getService(XReportsService.class).getReportGroups());
+		model.put("reportDefinitions", Context.getService(ReportDefinitionService.class).getAllDefinitions(false));
 	}
 	
 	public String post(PageModel model,
@@ -38,6 +35,7 @@ public class ReportPageController {
             @RequestParam(value = "reportName", required = false) String name,
             @RequestParam(value = "identifier", required = false) String identifier,
             @RequestParam(value = "group", required = false) Integer groupId,
+            @RequestParam(value = "externalReportUuid", required = false) String externalReportUuid,
             HttpSession session, UiUtils ui) {
 
 		if (StringUtils.isBlank(name)) {
@@ -55,6 +53,8 @@ public class ReportPageController {
 		
 		report.setName(name);
 		report.setIdentifier(identifier);
+		report.setExternalReportUuid(externalReportUuid);
+		
 		if (groupId != null) {
 			report.setGroup(service.getReportGroup(groupId));
 		}

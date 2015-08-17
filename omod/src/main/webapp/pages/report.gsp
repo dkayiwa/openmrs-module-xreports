@@ -47,6 +47,20 @@
         	<% } %>
         </select>
     </p>
+    
+    <p>
+        <label for="source">
+            ${ui.message("xreports.reportDefinition")}
+        </label>
+        <select id="externalReportUuid" name="externalReportUuid"  <% if (report.externalReportUuid != null) { %> value="${report.externalReportUuid}" <% } %> >
+        	<option></option>
+        	<% reportDefinitions.each { reportDefinition -> %>
+	        	<option value="${reportDefinition.uuid}" <% if (report.externalReportUuid != null && reportDefinition.uuid == report.externalReportUuid) { %> selected="selected" <% } %> >
+	        		${reportDefinition.name}
+	        	</option>
+        	<% } %>
+        </select>
+    </p>
 
     <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/reports.page'" />
     <input type="submit" class="confirm right" id="save-button" value="${ ui.message("general.save") }" />
