@@ -2,14 +2,11 @@ package org.openmrs.module.xreports.page.controller;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
@@ -19,7 +16,6 @@ import org.openmrs.module.xreports.NameValue;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.XReportsService;
-import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;

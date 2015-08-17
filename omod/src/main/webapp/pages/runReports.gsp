@@ -44,7 +44,7 @@
 	    <% reports.each { report -> %>
 		    <tr>
 		        <td>
-		        	<a href="reportRunner.page?reportId=${report.reportId}<% if (param.groupId) { %>&groupId=${param.groupId[0]}<% } %>&refApp=true">${report.name}</a>
+		        	<a href="runReports.page?reportId=${report.reportId}<% if (param.groupId) { %>&groupId=${param.groupId[0]}<% } %>&refApp=true">${report.name}</a>
 		        </td>
 		    </tr>
 	    <% } %>
@@ -52,7 +52,7 @@
 	    <% groups.each { group -> %>
 		    <tr>
 		        <td>
-		        	<a href="runReport.form?groupId=${group.groupId}&refApp=true">${group.name}</a>
+		        	<a href="runReports.page?groupId=${group.groupId}&refApp=true">${group.name}</a>
 		        </td>
 		    </tr>
 	    <% } %>
