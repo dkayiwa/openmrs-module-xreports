@@ -281,6 +281,7 @@ public class PdfDocument {
 	    	    	xpos += 3;
 	    	    }
 	    	    else {
+	    	    	String bgcolor = element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR);
 	    	    	if ("center".equals(textAlign) || "right".equals(textAlign)) {
 	    	    		int align = PdfContentByte.ALIGN_CENTER;
 	    	    		float w = size/2;
@@ -292,16 +293,41 @@ public class PdfDocument {
 	    	    		if (width.equals("100%")) {
 	    	    			w = (Float.parseFloat(parentWidth.substring(0, parentWidth.length() - 2)) * 72) / denominator;
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR));
+	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor);
 	    	    			cb.showTextAligned(align, text, w/2, ypos - 3, 0);
 	    	    		}
 	    	    		else {
-	    	    			cb.showTextAligned(align, text, xpos + w, ypos, 0);
+	    	    			if (StringUtils.isNotBlank(bgcolor)) {
+	    	    				w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
+	    	    				if (StringUtils.isBlank(height)) {
+	    	    					height = "25px";
+	    	    				}
+		    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
+		    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor);
+		    	    			if (align == PdfContentByte.ALIGN_CENTER) {
+		    	    				cb.showTextAligned(align, text, w/2, ypos - 3, 0);
+		    	    			}
+		    	    			else {
+		    	    				cb.showTextAligned(align, text, xpos + w, ypos, 0);
+		    	    			}
+	    	    			}
+	    	    			else {
+	    	    				cb.showTextAligned(align, text, xpos + w, ypos, 0);
+	    	    			}
 	    	    		}
 	    	    	}
 	    	    	else {
-		    	    	cb.setTextMatrix(xpos, ypos);
-		    	    	cb.showText(text);
+	    	    		if (StringUtils.isNotBlank(bgcolor)) {
+    	    				float w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
+    	    				if (StringUtils.isBlank(height)) {
+    	    					height = "25px";
+    	    				}
+	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
+	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor);
+    	    			}
+	    	    		
+			    	    cb.setTextMatrix(xpos, ypos);
+			    	    cb.showText(text);
 	    	    	}
 	    	    	ypos -= 3;
 	    	    }
