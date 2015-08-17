@@ -16,6 +16,7 @@ import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.PdfDocument;
 import org.openmrs.module.xreports.web.ReportBuilder;
+import org.openmrs.module.xreports.web.util.WebUtil;
 
 public class ExportPdfServlet extends HttpServlet {
 	
@@ -41,7 +42,8 @@ public class ExportPdfServlet extends HttpServlet {
 				filename = filename.replace(" ", "-");
 			}
 						
-			response.setHeader(XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION, "inline");
+			response.setHeader(XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
+					XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + WebUtil.getXmlToken(filename));
 			response.setContentType(XReportsConstants.CONTENT_TYPE_PDF);
 			
 			response.setHeader("Cache-Control", "no-cache");
