@@ -3,7 +3,7 @@
         "id": "xreports.cfpd",
         "extensionPointId": "patientDashboard.overallActions",
         "type": "link",
-        "label": "xreports.app.label",
+        "label": "xreports.patient.summary",
         "url": "xreports/runReports.page?patientId={{patient.patientId}}",
         "icon": "icon-bar-chart",
         "order": 100,
