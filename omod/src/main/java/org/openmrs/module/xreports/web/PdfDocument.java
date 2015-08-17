@@ -133,14 +133,18 @@ public class PdfDocument {
 		}
 	}
 	
-	private static void drawRectangle(PdfContentByte content, float x, float y, float width, float height, String color) {
+	private static void drawRectangle(PdfContentByte content, float x, float y, float width, float height, String bgolor, String bdcolor) {
 	    content.saveState();
 	    PdfGState state = new PdfGState();
 	    //state.setFillOpacity(0.3f);
 	    content.setGState(state);
-	    Color clr = Markup.decodeColor(color);
+	    Color clr = Markup.decodeColor(bgolor);
 	    if (clr != null) {
 	    	content.setColorFill(clr);
+	    	content.setColorStroke(clr);
+	    }
+	    clr = Markup.decodeColor(bdcolor);
+	    if (clr != null) {
 	    	content.setColorStroke(clr);
 	    }
 	    content.rectangle(x, y, width, height);
@@ -282,6 +286,7 @@ public class PdfDocument {
 	    	    }
 	    	    else {
 	    	    	String bgcolor = element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR);
+	    	    	String bdcolor = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    	    	if ("center".equals(textAlign) || "right".equals(textAlign)) {
 	    	    		int align = PdfContentByte.ALIGN_CENTER;
 	    	    		float w = size/2;
@@ -293,7 +298,7 @@ public class PdfDocument {
 	    	    		if (width.equals("100%")) {
 	    	    			w = (Float.parseFloat(parentWidth.substring(0, parentWidth.length() - 2)) * 72) / denominator;
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor);
+	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
 	    	    			cb.showTextAligned(align, text, w/2, ypos - 3, 0);
 	    	    		}
 	    	    		else {
@@ -303,7 +308,7 @@ public class PdfDocument {
 	    	    					height = "25px";
 	    	    				}
 		    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-		    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor);
+		    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
 		    	    			if (align == PdfContentByte.ALIGN_CENTER) {
 		    	    				cb.showTextAligned(align, text, w/2, ypos - 3, 0);
 		    	    			}
@@ -323,7 +328,7 @@ public class PdfDocument {
     	    					height = "25px";
     	    				}
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor);
+	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
     	    			}
 	    	    		
 			    	    cb.setTextMatrix(xpos, ypos);
