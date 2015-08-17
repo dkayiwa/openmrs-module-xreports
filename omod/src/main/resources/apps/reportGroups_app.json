@@ -9,7 +9,7 @@
                 "type": "link",
                 "label": "xreports.manage.groups.app.label",
                 "url": "xreports/reportGroups.page",
-                "icon": "icon-file-alt",
+                "icon": "icon-briefcase",
                 "requiredPrivilege": "App: xreports.manage"
             }
         ]

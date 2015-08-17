@@ -5,7 +5,7 @@
         "type": "link",
         "label": "xreports.app.label",
         "url": "xreports/runReports.page?patientId={{patient.patientId}}",
-        "icon": "icon-file-alt",
+        "icon": "icon-bar-chart",
         "order": 100,
         "requiredPrivilege": "App: xreports.run"
     }

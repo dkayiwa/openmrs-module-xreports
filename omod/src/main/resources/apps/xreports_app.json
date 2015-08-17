@@ -15,7 +15,7 @@
                 "type": "link",
                 "label": "xreports.app.label",
                 "url": "xreports/dashboard.page",
-                "icon": "icon-file-alt",
+                "icon": "icon-bar-chart",
                 "requiredPrivilege": "App: xreports.manage"
             }
         ]
