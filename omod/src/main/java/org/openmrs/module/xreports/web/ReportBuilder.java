@@ -116,7 +116,6 @@ public class ReportBuilder {
 			customItems.clear();
 		}
 
-		System.out.println(DOMUtil.doc2String(doc));
 		return DOMUtil.doc2String(doc);
 	}
 	
