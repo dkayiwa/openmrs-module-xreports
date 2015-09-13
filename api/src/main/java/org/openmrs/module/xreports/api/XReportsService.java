@@ -44,7 +44,7 @@ public interface XReportsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.SQL_LEVEL_ACCESS)
 	@Transactional(readOnly = true)
-	public Integer getSqlIntValue(String sql) throws Exception;
+	public Float getSqlIntValue(String sql) throws Exception;
 	
 	/**
 	 * Gets all reports

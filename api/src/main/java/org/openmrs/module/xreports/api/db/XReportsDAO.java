@@ -18,7 +18,6 @@ import java.util.List;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.XReportsService;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Database methods for {@link XReportsService}.
@@ -32,7 +31,7 @@ public interface XReportsDAO {
 	 * @return the integer value if any results, else null
 	 * @throws Exception
 	 */
-	public Integer getSqlIntValue(String sql) throws Exception;
+	public Float getSqlIntValue(String sql) throws Exception;
 	
 	/**
 	 * Gets all reports

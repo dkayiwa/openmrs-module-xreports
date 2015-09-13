@@ -22,6 +22,29 @@
 
 	<!-- Add here beans related to the web context -->
 
+	<!-- Set up URL mappings for new URLs -->
+    <bean id="xreportsUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    	<property name="interceptors">
+    		<list>
+    			<ref bean="localeChangeInterceptor" />
+    		</list>
+    	</property>
+    	<property name="order"><value>50</value></property>
+    	<property name="mappings">
+            <props>
+				<prop key="module/xreports/fillParameter.form">fillParameterForm</prop>
+			</props>
+		</property>
+	</bean>	
+	
+	<bean id="fillParameterForm" class="org.openmrs.module.xreports.web.controller.FillParameterFormController">
+        <property name="commandName"><value>report</value></property>
+        <property name="formView"><value>/module/xreports/fillParameterForm</value></property>
+        <property name="successView"><value>runReport.list</value></property>
+        <property name="validator">
+		    <ref bean="fillParameterForm" />
+		</property>
+    </bean>
 	 
 	<!-- Annotation based controllers -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>

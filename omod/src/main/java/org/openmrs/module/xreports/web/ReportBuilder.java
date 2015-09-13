@@ -413,9 +413,9 @@ public class ReportBuilder {
 			if (SQL.equals(item.getAttribute("sourceType"))) {
 				String sql = item.getAttribute("sourceValue");
 				if (StringUtils.isNotBlank(sql)) {
-					Integer value = service.getSqlIntValue(sql);
+					Float value = service.getSqlIntValue(sql);
 					if (value == null) {
-						value = 0;
+						value = 0f;
 					}
 					
 					fieldValues.put(binding, value.toString());
@@ -589,7 +589,7 @@ public class ReportBuilder {
 		if (SQL.equals(sourceType)) {
 			String sql = item.getAttribute(SOURCE_VALUE);
 			if (StringUtils.isNotBlank(sql)) {
-				Integer value = null;
+				Float value = null;
 				try {
 					value = service.getSqlIntValue(sql);
 				}

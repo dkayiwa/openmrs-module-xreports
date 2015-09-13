@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.XReportsService;
@@ -35,13 +36,15 @@ public class ReportGroupPageController {
 		model.put("groups", groups);
 	}
 	
-	public String post(PageModel model,
+	public String post(UiSessionContext sessionContext, PageModel model,
 			@RequestParam(value = "groupId", required = false) Integer groupId,
             @RequestParam(value = "groupName", required = false) String name,
             @RequestParam(value = "identifier", required = false) String identifier,
             @RequestParam(value = "parentGroup", required = false) Integer parentGroupId,
             HttpSession session, UiUtils ui) {
 
+		sessionContext.requireAuthentication();
+		
 		if (StringUtils.isBlank(name)) {
 			session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
 				    ui.message("xreports.name.required", "xreports"));

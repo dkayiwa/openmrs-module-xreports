@@ -51,7 +51,7 @@ public class XReportsServiceImpl extends BaseOpenmrsService implements XReportsS
      * @see org.openmrs.module.xreports.api.XReportsService#getSqlIntValue(java.lang.String)
      */
     @Override
-    public Integer getSqlIntValue(String sql) throws Exception {
+    public Float getSqlIntValue(String sql) throws Exception {
     	return dao.getSqlIntValue(sql);
     }
 

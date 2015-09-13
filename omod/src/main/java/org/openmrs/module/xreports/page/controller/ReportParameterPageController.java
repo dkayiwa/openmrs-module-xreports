@@ -35,5 +35,6 @@ public class ReportParameterPageController {
 		
 		XReport report = Context.getService(XReportsService.class).getReport(reportId);
 		model.put("formName", report.getName());
+		model.put("reportId", report.getExternalReportUuid());
 	}
 }
