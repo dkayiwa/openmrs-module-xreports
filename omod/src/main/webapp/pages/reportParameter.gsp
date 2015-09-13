@@ -27,4 +27,4 @@
 </script>
 
 
-<iframe src="/${ ui.contextPath() }/module/xreports/fillParameter.form?reportId=${reportId}" width="100%" height="400"></iframe> 
+<iframe src="/${ ui.contextPath() }/module/xreports/fillParameter.form?reportId=${reportId}" width="100%" height="400" frameBorder="0" scrolling="no"></iframe> 
