@@ -55,7 +55,7 @@ function toggleInputElements( idPrefix ){
 									</c:if>
 								</spring:bind>
 			
-								<form method="post">
+								<form method="post" action="fillParameter.form">
 									<table style="padding:10px;">
 										<c:forEach var="parameter" items="${report.reportDefinition.parameters}">
 											<script type="text/javascript">
@@ -146,6 +146,7 @@ function toggleInputElements( idPrefix ){
 							            <tr>
 							            	<td colspan="2">
 							            		<br/>
+							            		<input type="hidden" name="reportId" value="${report.reportDefinition.uuid}" />
 												<input type="submit" value="<spring:message code="reporting.Report.run.button"/>" />
 												<c:if test="${!empty report.existingRequestUuid}">
 													<span style="padding-left:20px;">
