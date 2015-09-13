@@ -92,6 +92,13 @@
 		    <type>jar</type>
 		    <scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>htmlwidgets-omod</artifactId>
+			<version>1.6.4</version>
+			<scope>provided</scope>
+		</dependency>
 		 
 		<dependency>
 		    <groupId>org.openmrs.module</groupId>
