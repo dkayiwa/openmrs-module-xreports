@@ -71,7 +71,7 @@ public class FillParameterFormController extends SimpleFormController implements
 	 * @see BaseCommandController#initBinder(HttpServletRequest, ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+		//super.initBinder(request, binder);
 		binder.registerCustomEditor(Mapped.class, new MappedEditor());
 	}
 	

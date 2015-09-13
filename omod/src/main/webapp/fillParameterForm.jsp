@@ -1,29 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<%@ include file="/WEB-INF/template/include.jsp"%>
-
 <html>
   <head>
-		<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-addon.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-i18n.js" />
-		
-		<link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
-		
-		<script type="text/javascript">
-			<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
-				var $j = jQuery.noConflict();
-			</c:if>
-			
-			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
-			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
-		</script>
+	<%@ include file="/WEB-INF/view/module/reporting/include.jsp"%>
+	<%@ include file="/WEB-INF/view/module/reporting/includeScripts.jsp"%>
+	<%@ include file="/WEB-INF/template/headerMinimal.jsp"%>
+	<%@ include file="/WEB-INF/view/module/reporting/dialogSupport.jsp" %>
   </head>
   
-  <body>
-  
+<body>
+
 <openmrs:require privilege="Run Reports" otherwise="/login.htm" redirect="/module/xreports/runReport.form" />
 
 <script type="text/javascript">
