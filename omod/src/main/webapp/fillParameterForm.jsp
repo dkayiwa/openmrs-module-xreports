@@ -35,6 +35,14 @@ function toggleInputElements( idPrefix ){
 	.runTableCell {padding-right:10px; padding-bottom:5px;}
 </style>
 
+<spring:hasBindErrors name="report">
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<openmrs:message code="${error.code}" text="${error.code}"/><br/>
+		</c:forEach>
+	</div>
+</spring:hasBindErrors>
+
 <div id="page">
 	<div id="container">
 		<div>
