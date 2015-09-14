@@ -125,7 +125,7 @@ public class FillParameterFormController extends SimpleFormController implements
 							    "reporting.Report.run.error.invalidParamExpression");
 						}
 					} else {
-						errors.rejectValue("userEnteredParams[" + parameterName + "]", "error.required",
+						errors.rejectValue("userEnteredParams[" + parameterName + "]", parameterName + " is required",
 						    new Object[] { "This parameter" }, "{0} is required");
 					}
 				}
