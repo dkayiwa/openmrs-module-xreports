@@ -81,6 +81,15 @@ public interface XReportsService extends OpenmrsService {
 	public List<XReportGroup> getReportGroups(Integer groupId);
 	
 	/**
+	 * Gets a list of report that point to an external report uuid.
+	 * 
+	 * @param externalReportUuid the external report uuid
+	 * @return the list of reports
+	 */
+	@Transactional(readOnly = true)
+	public List<XReport> getReportsByExternalUuid(String externalReportUuid);
+	
+	/**
 	 * Gets a report with a given id
 	 * 
 	 * @param reportId the report id

@@ -100,6 +100,16 @@ public class HibernateXReportsDAO implements XReportsDAO {
 		
 		return query.list();
     }
+    
+    /**
+     * @see org.openmrs.module.xreports.api.XReportsService#getReportsByExternalUuid(java.lang.String)
+     */
+    @Override
+    public List<XReport> getReportsByExternalUuid(String externalReportUuid) {
+    	Query query = sessionFactory.getCurrentSession().createQuery("from XReport where externalReportUuid = :externalReportUuid");
+		query.setParameter("externalReportUuid", externalReportUuid);
+		return query.list();
+    }
 
 	/**
      * @see org.openmrs.module.xreports.api.db.XReportsDAO#getReportGroups(java.lang.Integer)

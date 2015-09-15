@@ -49,6 +49,14 @@ public interface XReportsDAO {
 	public List<XReport> getReports(Integer groupId);
 	
 	/**
+	 * Gets a list of report that point to an external report uuid.
+	 * 
+	 * @param externalReportUuid the external report uuid
+	 * @return the list of reports
+	 */
+	public List<XReport> getReportsByExternalUuid(String externalReportUuid);
+	
+	/**
 	 * Gets all report groups
 	 * 
 	 * @return List of report groups

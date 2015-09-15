@@ -132,6 +132,17 @@ public class ReportBuilder {
 		buildXPosItems(reportData, doc);
 	}
 	
+	public String getReportData(ReportData reportData, Document doc) throws Exception {
+		service = Context.getService(XReportsService.class);
+		
+		numberFormat = new DecimalFormat(Context.getAdministrationService().getGlobalProperty("xreports.format.number", "###,###.###"));
+		currencyFormat = new DecimalFormat(Context.getAdministrationService().getGlobalProperty("xreports.format.currency", "###,###.### Shs"));
+
+		displayReportData(reportData, doc);
+		
+		return DOMUtil.doc2String(doc);
+	}
+	
 	private void buildXPosItems(ReportData reportData, Document doc) throws Exception {
 		
 		Element root = doc.getDocumentElement();

@@ -109,6 +109,15 @@ public class XReportsServiceImpl extends BaseOpenmrsService implements XReportsS
 	    return dao.getReportGroups(groupId);
     }
 
+    /**
+     * @see org.openmrs.module.xreports.api.XReportsService#getReportGroups(java.lang.String)
+     */
+	@Override
+	@Transactional(readOnly = true)
+	public List<XReport> getReportsByExternalUuid(String externalReportUuid) {
+		return dao.getReportsByExternalUuid(externalReportUuid);
+	}
+
 	/**
      * @see org.openmrs.module.xreports.api.XReportsService#saveReport(org.openmrs.module.xreports.XReport)
      */
