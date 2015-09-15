@@ -68,7 +68,7 @@ public class ReportRunnerController {
 	private XReport getXReport(ReportData reportData) {
 		XReport report = new XReport();
 		report.setReportId(1);
-		report.setName("Some Rugayo");
+		report.setName(reportData.getDefinition().getName());
 		return report;
 	}
 }
