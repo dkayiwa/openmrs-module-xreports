@@ -63,7 +63,7 @@ function toggleInputElements( idPrefix ){
 									</c:if>
 								</spring:bind>
 			
-								<form method="post" action="fillParameter.form">
+								<form method="post" target="_parent">
 									<table style="padding:10px;">
 										<c:forEach var="parameter" items="${report.reportDefinition.parameters}">
 											<script type="text/javascript">
