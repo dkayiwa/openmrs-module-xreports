@@ -37,12 +37,13 @@ import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.propertyeditor.MappedEditor;
 import org.openmrs.module.reporting.report.ReportRequest;
-import org.openmrs.module.reporting.report.ReportRequest.Priority;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.module.xreports.XReport;
+import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.util.OpenmrsUtil;
 import org.quartz.CronExpression;
 import org.springframework.util.StringUtils;
@@ -54,7 +55,6 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.BaseCommandController;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * This controller runs a report (which must be passed in with the reportId parameter) after
@@ -193,8 +193,6 @@ public class FillParameterFormController extends SimpleFormController implements
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObject, BindException errors) throws Exception {
 		CommandObject command = (CommandObject) commandObject;
 		ReportDefinition reportDefinition = command.getReportDefinition();
-		
-		ReportService rs = Context.getService(ReportService.class);
 
 		// Parse the input parameters into appropriate objects and fail validation if any are invalid
 		Map<String, Object> params = new LinkedHashMap<String, Object>();
@@ -234,25 +232,9 @@ public class FillParameterFormController extends SimpleFormController implements
 			return showForm(request, response, errors);
 		}
 		
-		ReportRequest rr = null;
-		if (command.getExistingRequestUuid() != null) {
-			rr = rs.getReportRequestByUuid(command.getExistingRequestUuid());
-		}
-		else {
-			rr = new ReportRequest();
-		}
-		rr.setReportDefinition(new Mapped<ReportDefinition>(reportDefinition, params));
-		rr.setBaseCohort(command.getBaseCohort());
-	    rr.setRenderingMode(command.getSelectedMode());
-	    rr.setPriority(Priority.NORMAL);
-	    rr.setSchedule(command.getSchedule());
-		
-		// TODO: We might want to check here if this exact same report request is already queued and just re-direct if so
-		
-		rr = rs.queueReport(rr);
-		rs.processNextQueuedReports();
-		
-		return new ModelAndView(new RedirectView("../reports/reportHistoryOpen.form?uuid="+rr.getUuid()));
+		XReport report = Context.getService(XReportsService.class).getReportsByExternalUuid(reportDefinition.getUuid()).get(0);
+		String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
+		return new ModelAndView("redirect:/mxreports/reportRunner.page?reportId=" + report.getId() + group);
 	}
 	
 	/**
