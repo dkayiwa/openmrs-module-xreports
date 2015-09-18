@@ -52,7 +52,6 @@ function toggleInputElements( idPrefix ){
 			<table style="width:100%;">
 				<tr>
 					<td>
-	
 						<fieldSet>
 							<legend><b><spring:message code="reporting.runReport.runOrScheduleThisReport"/></b></legend>
 			
