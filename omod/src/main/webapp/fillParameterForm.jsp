@@ -15,6 +15,7 @@
 <script type="text/javascript">
 var fixedValueElementIds = new Array();
 var inputsToToggle = new Array();
+
 jQuery(document).ready(
 	function(){
 		for( var i in fixedValueElementIds ){
