@@ -234,7 +234,7 @@ public class FillParameterFormController extends SimpleFormController implements
 		
 		XReport report = Context.getService(XReportsService.class).getReportsByExternalUuid(reportDefinition.getUuid()).get(0);
 		String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
-		return new ModelAndView("redirect:/mxreports/reportRunner.page?reportId=" + report.getId() + group);
+		return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + report.getId() + group);
 	}
 	
 	/**
