@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -16,10 +17,13 @@ import javax.script.ScriptEngineManager;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.htmlwidgets.web.WidgetUtil;
 import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
+import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
@@ -98,9 +102,16 @@ public class ReportBuilder {
 			ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
 			ReportDefinition reportDef = rds.getDefinitionByUuid(uuid);
 			EvaluationContext context = new EvaluationContext();
-			if (reportParamData != null && reportParamData.getBaseCohort() != null) {
-				Cohort baseCohort = Context.getService(CohortDefinitionService.class).evaluate(reportParamData.getBaseCohort(), context);
-				context.setBaseCohort(baseCohort);
+			if (reportParamData != null) {
+				if (reportParamData.getBaseCohort() != null) {
+					Cohort baseCohort = Context.getService(CohortDefinitionService.class).evaluate(reportParamData.getBaseCohort(), context);
+					context.setBaseCohort(baseCohort);
+				}
+				
+				Map<String, Object> params = getParameters(reportParamData);
+				if (params.size() > 0) {
+					context.setParameterValues(params);
+				}
 			}
 			ReportData reportData = rds.evaluate(reportDef, context);
 			displayReportData(reportData, doc);
@@ -124,6 +135,37 @@ public class ReportBuilder {
 		}
 
 		return DOMUtil.doc2String(doc);
+	}
+	
+	public Map<String, Object> getParameters(ReportCommandObject userParams) {
+		Map<String, Object> params = new LinkedHashMap<String, Object>();
+		ReportDefinition reportDefinition = userParams.getReportDefinition();
+		if (reportDefinition.getParameters() != null && (userParams.getUserEnteredParams() != null || userParams.getExpressions() != null)) {
+			for (Parameter parameter : reportDefinition.getParameters()) {
+				Object value = null;
+				String expression = null;
+				if(userParams.getExpressions() != null && ObjectUtil.notNull(userParams.getExpressions().get(parameter.getName())))
+					expression = userParams.getExpressions().get(parameter.getName());
+				else
+					value = userParams.getUserEnteredParams().get(parameter.getName());
+				
+				if (ObjectUtil.notNull(value) || ObjectUtil.notNull(expression)) {
+					try {
+						if (StringUtils.isNotEmpty(expression))
+							value = expression;
+						else
+							value = WidgetUtil.parseInput(value, parameter.getType(), parameter.getCollectionType());
+						
+						params.put(parameter.getName(), value);
+					}
+					catch (Exception ex) {
+						System.out.println("userEnteredParams[" + parameter.getName() + "]" + "  " +  ex.getMessage());
+					}
+				}
+			}
+		}
+		
+		return params;
 	}
 	
 	private void displayReportData(ReportData reportData, Document doc) throws Exception {
