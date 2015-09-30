@@ -16,6 +16,7 @@ import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.PdfDocument;
 import org.openmrs.module.xreports.web.ReportBuilder;
+import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.openmrs.module.xreports.web.util.WebUtil;
 
 public class ExportPdfServlet extends HttpServlet {
@@ -53,7 +54,8 @@ public class ExportPdfServlet extends HttpServlet {
 			response.setCharacterEncoding(XReportsConstants.DEFAULT_CHARACTER_ENCODING);
 			
 			XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(formId));
-			new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report), request.getRealPath(""));
+			ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
+			new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData), request.getRealPath(""));
 		}
 		catch (Exception ex) {
 			log.error(ex.getMessage(), ex);

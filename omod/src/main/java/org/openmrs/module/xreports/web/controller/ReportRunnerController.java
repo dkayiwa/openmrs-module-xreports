@@ -25,7 +25,7 @@ public class ReportRunnerController {
 	                          @RequestParam(value = "groupId", required = false) Integer groupId,
 	                        HttpServletRequest request, HttpSession session, ModelMap map) throws Exception {
 		
-        Object data =  session.getAttribute(ReportingConstants.OPENMRS_REPORT_DATA);;
+        Object data =  session.getAttribute(ReportingConstants.OPENMRS_REPORT_DATA);
 		
 		XReport report = null;
 		if (data == null) {

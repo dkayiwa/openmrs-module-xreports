@@ -18,18 +18,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.htmlwidgets.web.WidgetUtil;
-import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.common.ObjectUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationUtil;
@@ -40,11 +36,11 @@ import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
-import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.module.xreports.XReport;
+import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.quartz.CronExpression;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -64,8 +60,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * form's response.
  */
 public class FillParameterFormController extends SimpleFormController implements Validator {
-
-	private transient Log log = LogFactory.getLog(this.getClass());
 	
 	/**
 	 * @see BaseCommandController#initBinder(HttpServletRequest, ServletRequestDataBinder)
@@ -77,12 +71,12 @@ public class FillParameterFormController extends SimpleFormController implements
 	
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
-		return c == CommandObject.class;
+		return c == ReportCommandObject.class;
 	}
 	
 	@Override
 	public void validate(Object commandObject, Errors errors) {
-		CommandObject command = (CommandObject) commandObject;
+		ReportCommandObject command = (ReportCommandObject) commandObject;
 		ValidationUtils.rejectIfEmpty(errors, "reportDefinition", "reporting.Report.run.error.missingReportID");
 		if (command.getReportDefinition() != null) {
 			ReportDefinition reportDefinition = command.getReportDefinition();
@@ -146,7 +140,10 @@ public class FillParameterFormController extends SimpleFormController implements
 	
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		CommandObject command = new CommandObject();
+		
+		request.getSession().removeAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
+		
+		ReportCommandObject command = new ReportCommandObject();
 		if (Context.isAuthenticated()) {
 			ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
 			ReportService reportService = Context.getService(ReportService.class);
@@ -191,7 +188,7 @@ public class FillParameterFormController extends SimpleFormController implements
 	
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObject, BindException errors) throws Exception {
-		CommandObject command = (CommandObject) commandObject;
+		ReportCommandObject command = (ReportCommandObject) commandObject;
 		ReportDefinition reportDefinition = command.getReportDefinition();
 
 		// Parse the input parameters into appropriate objects and fail validation if any are invalid
@@ -232,6 +229,8 @@ public class FillParameterFormController extends SimpleFormController implements
 			return showForm(request, response, errors);
 		}
 		
+		request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, command);
+		
 		XReport report = Context.getService(XReportsService.class).getReportsByExternalUuid(reportDefinition.getUuid()).get(0);
 		String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
 		return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + report.getId() + group);
@@ -242,7 +241,7 @@ public class FillParameterFormController extends SimpleFormController implements
 	 */
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object commandObject, Errors errors) throws Exception {
-		CommandObject command = (CommandObject) commandObject;
+		ReportCommandObject command = (ReportCommandObject) commandObject;
 		Map<String, Object> map = new HashMap<String, Object>();
 		EvaluationContext ec = new EvaluationContext();
 		Set<String> expSupportedTypes = new HashSet<String>();
@@ -260,114 +259,4 @@ public class FillParameterFormController extends SimpleFormController implements
 		map.put( "inputsToToggle", inputsToToggle );
 		return map;
 	}
-	
-	public class CommandObject {
-		
-		private String existingRequestUuid;
-		private ReportDefinition reportDefinition;
-		private Mapped<CohortDefinition> baseCohort;
-		private Map<String, Object> userEnteredParams;			
-		private String selectedRenderer; // as RendererClass!Arg
-		private String schedule;
-		private Map<String, String> expressions;
-		
-		private List<RenderingMode> renderingModes;	
-		
-		public CommandObject() {
-			userEnteredParams = new LinkedHashMap<String, Object>();
-			expressions = new HashMap<String ,String>();
-		}
-		
-		@SuppressWarnings("unchecked")
-		public RenderingMode getSelectedMode() {
-			if (selectedRenderer != null) {
-				try {
-					String[] temp = selectedRenderer.split("!");
-					Class<? extends ReportRenderer> rc = (Class<? extends ReportRenderer>) Context.loadClass(temp[0]);
-					String arg = (temp.length > 1 && StringUtils.hasText(temp[1])) ? temp[1] : null;
-					for (RenderingMode mode : renderingModes) {
-						if (mode.getRenderer().getClass().equals(rc) && OpenmrsUtil.nullSafeEquals(mode.getArgument(), arg)) {
-							return mode;
-						}
-					}
-					log.warn("Could not find requested rendering mode: " + selectedRenderer);
-				}
-				catch (Exception e) {
-					log.warn("Could not load requested renderer", e);
-				}
-			}
-			return null;
-		}
-
-		public String getExistingRequestUuid() {
-			return existingRequestUuid;
-		}
-
-		public void setExistingRequestUuid(String existingRequestUuid) {
-			this.existingRequestUuid = existingRequestUuid;
-		}
-
-		public List<RenderingMode> getRenderingModes() {
-			return renderingModes;
-		}
-		
-		public void setRenderingModes(List<RenderingMode> rendereringModes) {
-			this.renderingModes = rendereringModes;
-		}
-		
-		public ReportDefinition getReportDefinition() {
-			return reportDefinition;
-		}
-		
-		public void setReportDefinition(ReportDefinition reportDefinition) {
-			this.reportDefinition = reportDefinition;
-		}
-
-		public Mapped<CohortDefinition> getBaseCohort() {
-			return baseCohort;
-		}
-
-		public void setBaseCohort(Mapped<CohortDefinition> baseCohort) {
-			this.baseCohort = baseCohort;
-		}
-
-		public String getSelectedRenderer() {
-			return selectedRenderer;
-		}
-		
-		public void setSelectedRenderer(String selectedRenderer) {
-			this.selectedRenderer = selectedRenderer;
-		}
-		
-		public Map<String, Object> getUserEnteredParams() {
-			return userEnteredParams;
-		}
-		
-		public void setUserEnteredParams(Map<String, Object> userEnteredParams) {
-			this.userEnteredParams = userEnteredParams;
-		}
-
-		public String getSchedule() {
-			return schedule;
-		}
-
-		public void setSchedule(String schedule) {
-			this.schedule = schedule;
-		}
-		
-		/**
-		 * @return the expressions
-		 */
-		public Map<String, String> getExpressions() {
-			return expressions;
-		}
-		
-		/**
-		 * @param expressions the expressions to set
-		 */
-		public void setExpressions(Map<String, String> expressions) {
-			this.expressions = expressions;
-		}
-	}
-	
 }

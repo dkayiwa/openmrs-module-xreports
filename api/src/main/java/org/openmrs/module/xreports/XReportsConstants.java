@@ -21,4 +21,7 @@ public class XReportsConstants {
 	public static final String HTTP_HEADER_CONTENT_TYPE_XML = "text/xml; charset=utf-8";
 	
 	public static final String HTTP_HEADER_CONTENT_DISPOSITION_VALUE = "attachment; filename=";
+	
+	// Constants used within sessions to key report parameter data that can be retrieved
+	public static final String REPORT_PARAMETER_DATA = "__xreports_report_parameter_data";
 }

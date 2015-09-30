@@ -14,7 +14,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -64,7 +66,7 @@ public class ReportBuilder {
 	
 	private Map<String, String> fieldMapping = new HashMap<String, String>();
 	
-	public String build(String xml, String queryStr, XReport report) throws Exception {
+	public String build(String xml, String queryStr, XReport report, ReportCommandObject reportParamData) throws Exception {
 		
 		service = Context.getService(XReportsService.class);
 		
@@ -95,7 +97,12 @@ public class ReportBuilder {
 		if (StringUtils.isNotBlank(uuid)) {
 			ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
 			ReportDefinition reportDef = rds.getDefinitionByUuid(uuid);
-			ReportData reportData = rds.evaluate(reportDef, new EvaluationContext());
+			EvaluationContext context = new EvaluationContext();
+			if (reportParamData != null && reportParamData.getBaseCohort() != null) {
+				Cohort baseCohort = Context.getService(CohortDefinitionService.class).evaluate(reportParamData.getBaseCohort(), context);
+				context.setBaseCohort(baseCohort);
+			}
+			ReportData reportData = rds.evaluate(reportDef, context);
 			displayReportData(reportData, doc);
 		}
 		else {

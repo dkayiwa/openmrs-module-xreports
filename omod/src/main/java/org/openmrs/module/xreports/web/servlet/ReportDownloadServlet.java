@@ -41,6 +41,7 @@ import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.ReportBuilder;
+import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.openmrs.module.xreports.web.util.WebUtil;
 import org.openmrs.reporting.export.ExportColumn;
 
@@ -81,7 +82,8 @@ public class ReportDownloadServlet extends HttpServlet {
 
 			if ("true".equals(request.getParameter("runner"))) {
 				if (StringUtils.isNotBlank(xml)) {
-					xml = new ReportBuilder().build(xml, request.getQueryString(), report);
+					ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
+					xml = new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData);
 				}
 			}
 			else {
