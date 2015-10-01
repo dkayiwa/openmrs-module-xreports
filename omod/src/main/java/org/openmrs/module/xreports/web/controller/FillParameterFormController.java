@@ -41,6 +41,7 @@ import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.ReportCommandObject;
+import org.openmrs.module.xreports.web.XReportRenderer;
 import org.quartz.CronExpression;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -233,7 +234,12 @@ public class FillParameterFormController extends SimpleFormController implements
 		
 		XReport report = Context.getService(XReportsService.class).getReportsByExternalUuid(reportDefinition.getUuid()).get(0);
 		String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
-		return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + report.getId() + group);
+		if (renderingMode.getRenderer() instanceof XReportRenderer) {
+			return new ModelAndView("redirect:/moduleServlet/xreports/reportDownloadServlet?renderer=true&formId=" + report.getId());
+		}
+		else {
+			return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + report.getId() + group);
+		}
 	}
 	
 	/**

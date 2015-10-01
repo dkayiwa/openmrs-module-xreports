@@ -2,6 +2,7 @@ package org.openmrs.module.xreports.web.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -17,6 +18,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.reporting.common.DateUtil;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.definition.CohortCrossTabDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.CohortCrossTabDataSetDefinition.CohortDataSetColumn;
@@ -40,6 +42,7 @@ import org.openmrs.module.xreports.DesignItem;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
+import org.openmrs.module.xreports.web.PdfDocument;
 import org.openmrs.module.xreports.web.ReportBuilder;
 import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.openmrs.module.xreports.web.util.WebUtil;
@@ -56,7 +59,11 @@ public class ReportDownloadServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		PrintWriter writer = response.getWriter();
+		PrintWriter writer = null;
+		
+		if (!"true".equals(request.getParameter("renderer"))) {
+			writer = response.getWriter();
+		}
 		
 		try {
 			//try to authenticate users who log on inline (with the request).
@@ -85,6 +92,26 @@ public class ReportDownloadServlet extends HttpServlet {
 					ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
 					xml = new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData);
 				}
+			}
+			else if ("true".equals(request.getParameter("renderer"))) {
+				ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
+
+				String filename = DateUtil.formatDate(new Date(), "yyyy-MM-dd-HHmmss");
+				filename = reportParamData.getReportDefinition().getName() + "_" + filename + ".pdf";;
+	            
+				response.setHeader(XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
+						XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + WebUtil.getXmlToken(filename));
+				response.setContentType(XReportsConstants.CONTENT_TYPE_PDF);
+				
+				response.setHeader("Cache-Control", "no-cache");
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", -1);
+				response.setHeader("Cache-Control", "no-store");
+				response.setCharacterEncoding(XReportsConstants.DEFAULT_CHARACTER_ENCODING);
+				
+				new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData), request.getRealPath(""));
+				
+				return;
 			}
 			else {
 				String uuid = report.getExternalReportUuid();
