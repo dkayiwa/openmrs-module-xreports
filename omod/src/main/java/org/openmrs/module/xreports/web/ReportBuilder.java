@@ -800,14 +800,20 @@ public class ReportBuilder {
 	public String getValue(String designItemId, DataSetRow row) {
 		String binding = fieldMapping.get(designItemId);
 		if (binding != null) {
-			Object value = row.getColumnValue(binding);
-			if (value instanceof Date) {
-				return Context.getDateFormat().format(value);
+			if ("Numbering".equalsIgnoreCase(binding)) {
+				return currentIndex + ".";
 			}
-			if (value != null) {
-				return value.toString();
+			else {
+				Object value = row.getColumnValue(binding);
+				if (value instanceof Date) {
+					return Context.getDateFormat().format(value);
+				}
+				if (value != null) {
+					return value.toString();
+				}
 			}
 		}
+		
 		return null;
 	}
 }
