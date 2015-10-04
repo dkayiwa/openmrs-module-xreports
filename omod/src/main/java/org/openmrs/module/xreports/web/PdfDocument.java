@@ -364,6 +364,7 @@ public class PdfDocument {
 	    		String textDecoration = element.getAttribute(LayoutConstants.PROPERTY_TEXT_DECORATION);
 	    		String color = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    		String borderWidth = element.getAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH);
+	    		String borderStyle = element.getAttribute(LayoutConstants.PROPERTY_BORDER_STYLE);
 	    		
 	    		BaseFont font = getBaseFont(fontFamily, fontStyle, fontWeight, textDecoration, color);
 	    		
@@ -425,6 +426,10 @@ public class PdfDocument {
 	    	    
 	    	    cb.setFontAndSize(font, size);
 	    	    
+	    	    if (borderStyle != null && !borderStyle.contains("solid")) {
+	    	    	cb.setLineDash(bw, bw);
+	    	    }
+	    	    
 	            cb.moveTo(xpos, ypos);
 	            cb.lineTo(xpos + length, ypos);
 	            cb.stroke();
@@ -440,6 +445,7 @@ public class PdfDocument {
 	    		String textDecoration = element.getAttribute(LayoutConstants.PROPERTY_TEXT_DECORATION);
 	    		String color = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    		String borderWidth = element.getAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH);
+	    		String borderStyle = element.getAttribute(LayoutConstants.PROPERTY_BORDER_STYLE);
 	    		
 	    		BaseFont font = getBaseFont(fontFamily, fontStyle, fontWeight, textDecoration, color);
 	    		
@@ -492,6 +498,10 @@ public class PdfDocument {
 	    	    
 	    	    cb.setFontAndSize(font, size);
 	    	    
+	    	    if (borderStyle != null && !borderStyle.contains("solid")) {
+	    	    	cb.setLineDash(bw, bw);
+	    	    }
+	    	    
 	            cb.moveTo(xpos, ypos);
 	            cb.lineTo(xpos, ypos - length);
 	            cb.stroke();
@@ -508,6 +518,7 @@ public class PdfDocument {
 	    		String textDecoration = element.getAttribute(LayoutConstants.PROPERTY_TEXT_DECORATION);
 	    		String color = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    		String borderWidth = element.getAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH);
+	    		String borderStyle = element.getAttribute(LayoutConstants.PROPERTY_BORDER_STYLE);
 	    		
 	    		BaseFont font = getBaseFont(fontFamily, fontStyle, fontWeight, textDecoration, color);
 	    		
@@ -559,6 +570,10 @@ public class PdfDocument {
 	    	    }
 	    	    
 	    	    cb.setFontAndSize(font, size);
+	    	    
+	    	    if (borderStyle != null && !borderStyle.contains("solid")) {
+	    	    	cb.setLineDash(bw, bw);
+	    	    }
 
 	    	    cb.setLineWidth(bw);
 	    	    
