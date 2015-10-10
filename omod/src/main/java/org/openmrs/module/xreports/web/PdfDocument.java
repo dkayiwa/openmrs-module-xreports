@@ -302,7 +302,7 @@ public class PdfDocument {
 	    	    				bdcolor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    	    			}
 	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
-	    	    			cb.showTextAligned(align, text, w/2, ypos - 3, 0);
+	    	    			cb.showTextAligned(align, text, (xpos + w/2), ypos - 1, 0);
 	    	    		}
 	    	    		else {
 	    	    			if (StringUtils.isNotBlank(bgcolor) && StringUtils.isNotBlank(width)) {
