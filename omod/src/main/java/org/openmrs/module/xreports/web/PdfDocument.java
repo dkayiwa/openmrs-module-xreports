@@ -195,14 +195,14 @@ public class PdfDocument {
 	    	if (LayoutConstants.TYPE_LABEL.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		
 	    		String text = element.getAttribute(LayoutConstants.PROPERTY_TEXT);
-	    		if (StringUtils.isBlank(text)) {
+	    		String width = element.getAttribute(LayoutConstants.PROPERTY_WIDTH);
+	    		if (StringUtils.isBlank(text) && !"100%".equals(width)) {
 	    			continue;
 	    		}
 
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
 	    		String top = element.getAttribute(LayoutConstants.PROPERTY_TOP);
 	    		String height = element.getAttribute(LayoutConstants.PROPERTY_HEIGHT);
-	    		String width = element.getAttribute(LayoutConstants.PROPERTY_WIDTH);
 	    		String fontSize = element.getAttribute(LayoutConstants.PROPERTY_FONT_SIZE);
 	    		String fontFamily = element.getAttribute(LayoutConstants.PROPERTY_FONT_FAMILY);
 	    		String fontStyle = element.getAttribute(LayoutConstants.PROPERTY_FONT_STYLE);
@@ -298,6 +298,9 @@ public class PdfDocument {
 	    	    		if (width.equals("100%")) {
 	    	    			w = (Float.parseFloat(parentWidth.substring(0, parentWidth.length() - 2)) * 72) / denominator;
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
+	    	    			if (StringUtils.isBlank(bdcolor)) {
+	    	    				bdcolor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
+	    	    			}
 	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
 	    	    			cb.showTextAligned(align, text, w/2, ypos - 3, 0);
 	    	    		}
@@ -340,7 +343,7 @@ public class PdfDocument {
 	    	    cb.endText();
 	    	    
 	    	    if (StringUtils.isNotBlank(textDecoration) && textDecoration.contains("underline")) {
-	    	    cb.setLineWidth(1f);
+	    	    	cb.setLineWidth(1f);
 		    	    float length = font.getWidthPoint(text, size);
 		    	    cb.moveTo(xpos, ypos);
 		    	    if ("true".equals(rotated)) {
