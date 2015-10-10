@@ -343,7 +343,7 @@ public class PdfDocument {
 	    	    cb.endText();
 	    	    
 	    	    if (StringUtils.isNotBlank(textDecoration) && textDecoration.contains("underline")) {
-	    	    	cb.setLineWidth(1f);
+	    	    	cb.setLineWidth(0.5f);
 		    	    float length = font.getWidthPoint(text, size);
 		    	    cb.moveTo(xpos, ypos);
 		    	    if ("true".equals(rotated)) {
@@ -354,7 +354,7 @@ public class PdfDocument {
 		            cb.stroke();
 	    	    }
 	    	    
-	            cb.restoreState();
+	    	    cb.restoreState();
 	    	} 
 	    	else if (LayoutConstants.TYPE_HORIZONTAL_LINE.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
@@ -421,6 +421,7 @@ public class PdfDocument {
 	    	    ypos += DEPTH;
 	    	    float length = (w * 72) / denominator;
 	    	    
+	    	    cb.saveState();
 	    		cb.setLineWidth(bw);
 	    	    
 	    	    if(StringUtils.isNotBlank(color)) {
@@ -436,6 +437,7 @@ public class PdfDocument {
 	            cb.moveTo(xpos, ypos);
 	            cb.lineTo(xpos + length, ypos);
 	            cb.stroke();
+	            cb.restoreState();
 	    	} 
 	    	else if (LayoutConstants.TYPE_VERTICAL_LINE.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
@@ -493,6 +495,7 @@ public class PdfDocument {
 	    	    ypos += DEPTH;
 	    	    float length = (h * 72) / denominator;
 	    	    
+	    	    cb.saveState();
 	    		cb.setLineWidth(bw);
 	    		
 	    	    if(StringUtils.isNotBlank(color)) {
@@ -508,6 +511,7 @@ public class PdfDocument {
 	            cb.moveTo(xpos, ypos);
 	            cb.lineTo(xpos, ypos - length);
 	            cb.stroke();
+	            cb.restoreState();
 	    	}
 	    	else if (LayoutConstants.TYPE_TABLE.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
@@ -568,6 +572,8 @@ public class PdfDocument {
 	    	    float lengthw = (w * 72) / denominator;
 	    	    float lengthh = (h * 72) / denominator;
 	    	    
+	    	    cb.saveState();
+	    	    
 	    	    if(StringUtils.isNotBlank(color)) {
 	    	    	cb.setColorStroke(Markup.decodeColor(color));
 	    	    }
@@ -599,6 +605,7 @@ public class PdfDocument {
 	            cb.lineTo(xpos + lengthw, ypos - lengthh);
 	            
 	            cb.stroke();
+	            cb.restoreState();
 	    	}
 	    	else if (LayoutConstants.TYPE_GROUPBOX.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
@@ -658,6 +665,8 @@ public class PdfDocument {
 	    	    float lengthw = (w * 72) / denominator;
 	    	    float lengthh = (h * 72) / denominator;
 	    	    
+	    	    cb.saveState();
+	    	    
 	    	    if(StringUtils.isNotBlank(color)) {
 	    	    	cb.setColorStroke(Markup.decodeColor(color));
 	    	    }
@@ -685,6 +694,7 @@ public class PdfDocument {
 	            cb.lineTo(xpos + lengthw, ypos - lengthh);
 	            
 	            cb.stroke();
+	            cb.restoreState();
 	    	}
 	    	else if (LayoutConstants.TYPE_LOGO.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
