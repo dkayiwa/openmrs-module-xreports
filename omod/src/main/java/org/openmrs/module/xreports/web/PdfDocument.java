@@ -343,7 +343,7 @@ public class PdfDocument {
 	    	    cb.endText();
 	    	    
 	    	    if (StringUtils.isNotBlank(textDecoration) && textDecoration.contains("underline")) {
-	    	    	cb.setLineWidth(0.5f);
+	    	    	cb.setLineWidth(1f);
 		    	    float length = font.getWidthPoint(text, size);
 		    	    cb.moveTo(xpos, ypos);
 		    	    if ("true".equals(rotated)) {
