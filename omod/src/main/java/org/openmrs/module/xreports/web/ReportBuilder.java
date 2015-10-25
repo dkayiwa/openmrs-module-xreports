@@ -254,20 +254,23 @@ public class ReportBuilder {
 			Integer secondPage = null;
 			nodes = doc.getElementsByTagName(DesignItem.NAME_PT_POS);
 			if (nodes != null && nodes.getLength() > 0) {
-				Element ptPosItem = (Element)nodes.item(0);
-				nodes = ptPosItem.getElementsByTagName(DesignItem.NAME_ITEM);
-				for (int i = 0; i < nodes.getLength(); i++) {
-					Element element = (Element) nodes.item(i);
-					s = element.getAttribute(LayoutConstants.PROPERTY_ID);
-					if ((SECOND_PAGE + "").equals(s)) {
-						s = element.getAttribute(DesignItem.PROPERTY_YPOS);
-						secondPage = Integer.parseInt(s.substring(0, s.length() - 2));
-						break;
+				for (int index = 0; index < nodes.getLength(); index++) {
+					Element ptPosItem = (Element)nodes.item(0);
+					NodeList nodelist = ptPosItem.getElementsByTagName(DesignItem.NAME_ITEM);
+					for (int i = 0; i < nodelist.getLength(); i++) {
+						Element element = (Element) nodelist.item(i);
+						s = element.getAttribute(LayoutConstants.PROPERTY_ID);
+						if ((SECOND_PAGE + "").equals(s)) {
+							s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+							secondPage = Integer.parseInt(s.substring(0, s.length() - 2));
+							break;
+						}
 					}
-				}
-				
-				if (ptPosItem != null) {
-					ptPosItem.getParentNode().removeChild(ptPosItem);
+					
+					if (ptPosItem != null) {
+						ptPosItem.getParentNode().removeChild(ptPosItem);
+						index--;
+					}
 				}
 			}
 			

@@ -196,8 +196,11 @@ public class PdfDocument {
 	    		
 	    		String text = element.getAttribute(LayoutConstants.PROPERTY_TEXT);
 	    		String width = element.getAttribute(LayoutConstants.PROPERTY_WIDTH);
-	    		if (StringUtils.isBlank(text) && !"100%".equals(width)) {
-	    			continue;
+	    		if (StringUtils.isBlank(text)) {
+	    			String bgColor = element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR);
+	    			if (!"100%".equals(width) || StringUtils.isBlank(bgColor) || "white".equalsIgnoreCase(bgColor)) {
+	    				continue;
+	    			}
 	    		}
 
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
