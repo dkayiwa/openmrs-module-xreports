@@ -13,13 +13,13 @@
  */
 package org.openmrs.module.xreports.api.db.hibernate;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
@@ -54,18 +54,8 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public Float getSqlIntValue(String sql) throws Exception {
-		Float value = null;
-		Statement statement = sessionFactory.getCurrentSession().connection().createStatement();
-		ResultSet res = statement.executeQuery(sql);
-		if (res.next()) {
-			value = res.getFloat(1);
-			if (res.wasNull()) {
-				value = null;
-			}
-		}
-		res.close();
-		statement.close();
-		return value;
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
+		return (Float)query.uniqueResult();
 	}
 	
 	/**
@@ -74,7 +64,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public List<XReport> getReports() {
-		return sessionFactory.getCurrentSession().createQuery("from XReport order by name").list();
+		return getCurrentSession().createQuery("from XReport order by name").list();
 	}
 	
 	/**
@@ -83,7 +73,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public List<XReportGroup> getReportGroups() {
-		return sessionFactory.getCurrentSession().createQuery("from XReportGroup order by name").list();
+		return getCurrentSession().createQuery("from XReportGroup order by name").list();
 	}
 	
 	/**
@@ -91,11 +81,11 @@ public class HibernateXReportsDAO implements XReportsDAO {
      */
     @Override
     public List<XReport> getReports(Integer groupId) {
-    	Query query = sessionFactory.getCurrentSession().createQuery("from XReport where group = :group order by name");
+    	Query query = getCurrentSession().createQuery("from XReport where group = :group order by name");
 		query.setParameter("group", new XReportGroup(groupId));
 		
 		if (groupId == null) {
-			query = sessionFactory.getCurrentSession().createQuery("from XReport where group is null order by name");
+			query = getCurrentSession().createQuery("from XReport where group is null order by name");
 		}
 		
 		return query.list();
@@ -106,7 +96,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
      */
     @Override
     public List<XReport> getReportsByExternalUuid(String externalReportUuid) {
-    	Query query = sessionFactory.getCurrentSession().createQuery("from XReport where externalReportUuid = :externalReportUuid");
+    	Query query = getCurrentSession().createQuery("from XReport where externalReportUuid = :externalReportUuid");
 		query.setParameter("externalReportUuid", externalReportUuid);
 		return query.list();
     }
@@ -116,11 +106,11 @@ public class HibernateXReportsDAO implements XReportsDAO {
      */
     @Override
     public List<XReportGroup> getReportGroups(Integer groupId) {
-    	Query query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where parentGroup = :parentGroup order by name");
+    	Query query = getCurrentSession().createQuery("from XReportGroup where parentGroup = :parentGroup order by name");
 		query.setParameter("parentGroup", new XReportGroup(groupId));
 		
 		if (groupId == null) {
-			query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where parentGroup is null order by name");
+			query = getCurrentSession().createQuery("from XReportGroup where parentGroup is null order by name");
 		}
 		
 		return query.list();
@@ -131,7 +121,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public XReport getReport(Integer reportId) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from XReport where reportId = :reportId");
+		Query query = getCurrentSession().createQuery("from XReport where reportId = :reportId");
 		query.setParameter("reportId", reportId);
 		return (XReport) query.uniqueResult();
 	}
@@ -141,7 +131,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public XReportGroup getReportGroup(Integer groupId) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from XReportGroup where groupId = :groupId");
+		Query query = getCurrentSession().createQuery("from XReportGroup where groupId = :groupId");
 		query.setParameter("groupId", groupId);
 		return (XReportGroup) query.uniqueResult();
 	}
@@ -151,7 +141,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public XReport saveReport(XReport report) {
-		sessionFactory.getCurrentSession().save(report);
+		getCurrentSession().save(report);
 		return report;
 	}
 	
@@ -160,7 +150,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public XReportGroup saveReportGroup(XReportGroup group) {
-		sessionFactory.getCurrentSession().save(group);
+		getCurrentSession().save(group);
 		return group;
 	}
 	
@@ -169,7 +159,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public void deleteReport(XReport report) {
-		sessionFactory.getCurrentSession().delete(report);
+		getCurrentSession().delete(report);
 	}
 	
 	/**
@@ -177,6 +167,26 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 */
 	@Override
 	public void deleteReportGroup(XReportGroup group) {
-		sessionFactory.getCurrentSession().delete(group);
+		getCurrentSession().delete(group);
+	}
+	
+	/**
+	 * Gets the current hibernate session while taking care of the hibernate 3 and 4 differences.
+	 * 
+	 * @return the current hibernate session.
+	 */
+	private org.hibernate.Session getCurrentSession() {
+		try {
+			return sessionFactory.getCurrentSession();
+		}
+		catch (NoSuchMethodError ex) {
+			try {
+				Method method = sessionFactory.getClass().getMethod("getCurrentSession", null);
+				return (org.hibernate.Session)method.invoke(sessionFactory, null);
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Failed to get the current hibernate session", e);
+			}
+		}
 	}
 }

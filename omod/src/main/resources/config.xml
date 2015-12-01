@@ -25,6 +25,8 @@
 	    <aware_of_module>org.openmrs.module.emrapi</aware_of_module>
 	    <aware_of_module>org.openmrs.module.appframework</aware_of_module>
 	    <aware_of_module>org.openmrs.module.reporting</aware_of_module>
+	    <aware_of_module>org.openmrs.module.reportingcompatibility</aware_of_module>
+	    <aware_of_module>org.openmrs.module.legacyui</aware_of_module>
 	</aware_of_modules>
 	
 	<!-- Adds link to admin page -->
