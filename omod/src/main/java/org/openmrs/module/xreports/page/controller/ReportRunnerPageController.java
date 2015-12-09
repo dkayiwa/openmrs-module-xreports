@@ -32,7 +32,7 @@ public class ReportRunnerPageController {
 		emrContext.requireAuthentication();
 		
 
-        Object data =  session.getAttribute(ReportingConstants.OPENMRS_REPORT_DATA);;
+        Object data =  session.getAttribute(ReportingConstants.OPENMRS_REPORT_DATA);
 		
 		XReport report = null;
 		if (data == null) {
@@ -86,7 +86,7 @@ public class ReportRunnerPageController {
 	private XReport getXReport(ReportData reportData) {
 		XReport report = new XReport();
 		report.setReportId(1);
-		report.setName("Some Rugayo");
+		report.setName(reportData.getDefinition().getName());
 		return report;
 	}
 }

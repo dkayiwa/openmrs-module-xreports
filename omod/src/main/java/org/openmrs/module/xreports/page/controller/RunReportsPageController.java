@@ -3,9 +3,12 @@ package org.openmrs.module.xreports.page.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.reporting.ReportingConstants;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.xreports.NameValue;
@@ -22,9 +25,12 @@ public class RunReportsPageController {
 			@RequestParam(required = false, value = "groupId") Integer groupId,
 			@RequestParam(required = false, value = "reportId") Integer reportId,
 			@RequestParam(required = false, value = "reportTitle") String reportTitle,
+			HttpSession session,
 			UiSessionContext emrContext, UiUtils ui) {
 
 		emrContext.requireAuthentication();
+		
+		session.setAttribute(ReportingConstants.OPENMRS_REPORT_DATA, null);
 		
 		if (reportId != null) {
 			XReport report = Context.getService(XReportsService.class).getReport(reportId);
