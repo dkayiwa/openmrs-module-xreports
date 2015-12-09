@@ -56,11 +56,11 @@ public class ReportRunnerController {
 		
 		map.put("title", report.getName());
 		
-		url = "/moduleServlet/xreports/reportDownloadServlet?contentType=xml&runner=true&";
+		url = "moduleServlet/xreports/reportDownloadServlet?contentType=xml&runner=true&";
 		url += request.getQueryString() + "&";
 		map.put("reportDownloadServlet", URLDecoder.decode(url, "UTF-8"));
 		
-		map.put("exportPdfServlet", URLDecoder.decode(("/moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&"), "UTF-8"));
+		map.put("exportPdfServlet", URLDecoder.decode(("moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&"), "UTF-8"));
 		
 		return null;
 	}

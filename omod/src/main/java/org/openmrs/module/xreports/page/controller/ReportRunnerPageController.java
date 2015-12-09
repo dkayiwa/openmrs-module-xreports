@@ -63,11 +63,11 @@ public class ReportRunnerPageController {
 		
 		model.put("title", report.getName());
 		
-		url = "/moduleServlet/xreports/reportDownloadServlet?contentType=xml&runner=true&";
+		url = "moduleServlet/xreports/reportDownloadServlet?contentType=xml&runner=true&";
 		url += request.getQueryString() + "&";
 		model.put("reportDownloadServlet", URLDecoder.decode(url, "UTF-8"));
 		
-		model.put("exportPdfServlet", URLDecoder.decode(("/moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&"), "UTF-8"));
+		model.put("exportPdfServlet", URLDecoder.decode(("moduleServlet/xreports/exportPdfServlet?" + request.getQueryString() + "&"), "UTF-8"));
 
 		List<NameValue> crumbs = new ArrayList<NameValue>();
 		while (groupId != null) {
