@@ -116,4 +116,12 @@ public interface XReportsDAO {
 	 * @param group the report group to delete
 	 */
 	public void deleteReportGroup(XReportGroup group);
+	
+	/**
+	 * Gets column labels in data to be returned by an sql statement
+	 * 
+	 * @param sql the sql statement
+	 * @return the column labels
+	 */
+	public List<String> getColumns(String sql);
 }

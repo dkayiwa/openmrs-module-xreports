@@ -3,6 +3,7 @@ package org.openmrs.module.xreports.web.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -35,6 +36,7 @@ import org.openmrs.module.reporting.dataset.definition.RowPerObjectDataSetDefini
 import org.openmrs.module.reporting.dataset.definition.SimpleIndicatorDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.SimpleIndicatorDataSetDefinition.SimpleIndicatorColumn;
 import org.openmrs.module.reporting.dataset.definition.SimplePatientDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
@@ -201,6 +203,12 @@ public class ReportDownloadServlet extends HttpServlet {
 			else if (def instanceof SimpleIndicatorDataSetDefinition) {
 				for (SimpleIndicatorColumn col : ((SimpleIndicatorDataSetDefinition) def).getColumns()) {
 					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+				}
+			}
+			else if (def instanceof SqlDataSetDefinition) {
+				List<String> columns = Context.getService(XReportsService.class).getColumns(((SqlDataSetDefinition) def).getSqlQuery());
+				for (String col : columns) {
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col + "' binding='" + col + "' text='" + col + "' sourceType='Custom' />";
 				}
 			}
 			

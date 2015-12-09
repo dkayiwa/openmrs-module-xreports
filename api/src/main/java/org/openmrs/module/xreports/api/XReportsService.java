@@ -136,4 +136,6 @@ public interface XReportsService extends OpenmrsService {
 	 * @param group the report group to delete
 	 */
 	public void deleteReportGroup(XReportGroup group);
+	
+	public List<String> getColumns(String sql);
 }

@@ -14,6 +14,12 @@
 package org.openmrs.module.xreports.api.db.hibernate;
 
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -188,5 +194,27 @@ public class HibernateXReportsDAO implements XReportsDAO {
 				throw new RuntimeException("Failed to get the current hibernate session", e);
 			}
 		}
+	}
+
+	@Override
+	public List<String> getColumns(String sql) {
+		
+		List<String> columns = new ArrayList<String>();
+		
+		Connection con = sessionFactory.getCurrentSession().connection();
+		
+		try {
+			Statement statement = con.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			ResultSetMetaData metadata = resultSet.getMetaData();
+
+			for (int column = 1; column <= metadata.getColumnCount(); column++) {
+				columns.add(metadata.getColumnLabel(column));
+			}
+		}
+		catch (SQLException ex) {
+			log.error("Failed to get column labels", ex);
+		}
+		return columns;
 	}
 }

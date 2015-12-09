@@ -149,4 +149,9 @@ public class XReportsServiceImpl extends BaseOpenmrsService implements XReportsS
     public void deleteReportGroup(XReportGroup group) {
 	    dao.deleteReportGroup(group);
     }
+
+	@Override
+	public List<String> getColumns(String sql) {
+		return dao.getColumns(sql);
+	}
 }
