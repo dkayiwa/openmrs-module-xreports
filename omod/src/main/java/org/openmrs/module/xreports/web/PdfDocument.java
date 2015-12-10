@@ -304,7 +304,12 @@ public class PdfDocument {
 	    	    			if (StringUtils.isBlank(bdcolor)) {
 	    	    				bdcolor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    	    			}
-	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+
+	    		    	    ypos = bottom - (((h + parentTop - diff) * 72) / denominator);
+	    		    	    ypos += DEPTH;
+	    		    	    
+	    	    			drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
 	    	    			cb.showTextAligned(align, text, (xpos + w/2), ypos - 1, 0);
 	    	    		}
 	    	    		else {
@@ -315,7 +320,13 @@ public class PdfDocument {
 	    	    					height = "25px";
 	    	    				}
 		    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-		    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+		    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+		    	    			
+		    	    			ypos = bottom - (((h + parentTop - diff) * 72) / denominator);
+		    		    	    ypos += DEPTH;
+		    		    	    
+		    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
+		    		    	    
 		    	    			if (align == PdfContentByte.ALIGN_CENTER) {
 		    	    				cb.showTextAligned(align, text, w/2, ypos - 3, 0);
 		    	    			}
@@ -335,7 +346,12 @@ public class PdfDocument {
     	    					height = "25px";
     	    				}
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-	    	    			drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    	    			
+	    	    			ypos = bottom - (((h + parentTop - diff) * 72) / denominator);
+	    		    	    ypos += DEPTH;
+	    		    	    
+	    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
     	    			}
 	    	    		
 			    	    cb.setTextMatrix(xpos, ypos);
