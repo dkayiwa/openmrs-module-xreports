@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.reporting.ReportingConstants;
 import org.openmrs.module.xreports.ReportParameter;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
@@ -81,6 +82,8 @@ public class ReportController {
 		if (!WebUtil.isAuthenticated(request, response, null)) {
 			return null;
 		}
+		
+		request.getSession().setAttribute(ReportingConstants.OPENMRS_REPORT_DATA, null);
 		
 		if (reportId != null) {
 			XReport report = Context.getService(XReportsService.class).getReport(reportId);
