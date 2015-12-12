@@ -155,7 +155,7 @@ public class ReportDownloadServlet extends HttpServlet {
 		
 		Map<String, Element> map = getItemBindingMap(doc);
 		
-		int id = 1;
+		int id = 0;
 		String xml = "<DesignItems>";
 		
 		for (Map.Entry<String, Mapped<? extends DataSetDefinition>> e : reportDef.getDataSetDefinitions().entrySet()) {
@@ -285,6 +285,7 @@ public class ReportDownloadServlet extends HttpServlet {
 	}
 	
 	private int getNextId(int id) {
+		id++;
 		while (idlist.contains(id)) {
 			id++;
 		}
