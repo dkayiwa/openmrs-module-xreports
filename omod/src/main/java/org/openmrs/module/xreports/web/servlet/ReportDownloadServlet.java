@@ -2,7 +2,9 @@ package org.openmrs.module.xreports.web.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +42,7 @@ import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.xreports.DOMUtil;
 import org.openmrs.module.xreports.DesignItem;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
@@ -49,6 +52,10 @@ import org.openmrs.module.xreports.web.ReportBuilder;
 import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.openmrs.module.xreports.web.util.WebUtil;
 import org.openmrs.reporting.export.ExportColumn;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class ReportDownloadServlet extends HttpServlet {
 	
@@ -58,6 +65,8 @@ public class ReportDownloadServlet extends HttpServlet {
 	
 	/** The formId request parameter. */
 	public static final String REQUEST_PARAM_REPORT_ID = "formId";
+	
+	private List<String> idlist;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -122,7 +131,9 @@ public class ReportDownloadServlet extends HttpServlet {
 					if (xml == null) {
 						xml = "";
 					}
-					xml += getDesignItems(reportDef);
+					
+					Document doc = DOMUtil.fromString2Doc(xml);
+					xml = mergeDesignItems(doc, getDesignItems(reportDef, doc));
 				}
 			}
 			
@@ -137,78 +148,98 @@ public class ReportDownloadServlet extends HttpServlet {
 		}
 	}
 	
-	private String getDesignItems(ReportDefinition reportDef) {
+	private String getDesignItems(ReportDefinition reportDef, Document doc) {
 		if (reportDef == null) {
 			return "";
 		}
 		
-		int id = 1;
+		Map<String, Element> map = getItemBindingMap(doc);
 		
+		int id = 1;
 		String xml = "<DesignItems>";
 		
 		for (Map.Entry<String, Mapped<? extends DataSetDefinition>> e : reportDef.getDataSetDefinitions().entrySet()) {
 			DataSetDefinition def = e.getValue().getParameterizable();
 			
-			xml += "<DesignItem type='0' id='0" + DesignItem.NONE + "' name='" + def.getName() + "' description='" + def.getDescription() + "'>";
+			id = getNextId(id);
+			xml += "<DesignItem type='0' binding='" + e.getKey() + "' id='" + id + "' name='" + def.getName() + "' description='" + def.getDescription() + "' sourceType='Grouping' >";
 			
 			if (def instanceof SimplePatientDataSetDefinition) {
 				
 				for (String property : ((SimplePatientDataSetDefinition) def).getPatientProperties()) {
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + property + "' binding='" + property + "' text='" + property + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + property + "' text='" + property + "' sourceType='Custom' />";
 				}
 				for (PersonAttributeType attribute : ((SimplePatientDataSetDefinition) def).getPersonAttributeTypes()) {
+					id = getNextId(id);
 					String property = StringEscapeUtils.escapeXml(attribute.getName());
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + property + "' binding='" + attribute.getId() + "' text='" + property + "' sourceType='Custom' />";
+					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + attribute.getId() + "' text='" + property + "' sourceType='Custom' />";
 				}
 				for (PatientIdentifierType identifier : ((SimplePatientDataSetDefinition) def).getIdentifierTypes()) {
+					id = getNextId(id);
 					String property = StringEscapeUtils.escapeXml(identifier.getName());
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
+					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof CohortIndicatorDataSetDefinition) {
 				for (CohortIndicatorAndDimensionColumn col : ((CohortIndicatorDataSetDefinition) def).getColumns()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof CohortCrossTabDataSetDefinition) {
 				for (CohortDataSetColumn col : ((CohortCrossTabDataSetDefinition) def).getDataSetColumns()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof CohortIndicatorAndDimensionDataSetDefinition) {
 				for (CohortIndicatorAndDimensionSpecification col : ((CohortIndicatorAndDimensionDataSetDefinition) def).getSpecifications()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getIndicatorNumber() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getIndicatorNumber() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof CohortsWithVaryingParametersDataSetDefinition) {
 				for (Column col : ((CohortsWithVaryingParametersDataSetDefinition) def).getColumns()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof DataExportDataSetDefinition) {
 				for (ExportColumn col : ((DataExportDataSetDefinition) def).getDataExport().getColumns()) {
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id++ +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof LogicDataSetDefinition) {
 				for (LogicDataSetDefinition.Column col : ((LogicDataSetDefinition) def).getColumns()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof RowPerObjectDataSetDefinition) {
 				for (DataSetColumn col : ((RowPerObjectDataSetDefinition) def).getDataSetColumns()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof SimpleIndicatorDataSetDefinition) {
 				for (SimpleIndicatorColumn col : ((SimpleIndicatorDataSetDefinition) def).getColumns()) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					id = getNextId(id);
+					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
 				}
 			}
 			else if (def instanceof SqlDataSetDefinition) {
 				List<String> columns = Context.getService(XReportsService.class).getColumns(((SqlDataSetDefinition) def).getSqlQuery());
 				for (String col : columns) {
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id++ +"' name='" + col + "' binding='" + col + "' text='" + col + "' sourceType='Custom' />";
+					id = getNextId(id);
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col + "' binding='" + col + "' text='" + col + "' sourceType='Custom' />";
+					}
 				}
 			}
 			
@@ -217,6 +248,46 @@ public class ReportDownloadServlet extends HttpServlet {
 		
 		xml += "</DesignItems>";
 		
-		return " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR " + xml;
+		return xml;
+		//return " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR " + xml;
+	}
+	
+	private String mergeDesignItems(Document doc, String designItemsXml) throws Exception {
+
+		if (StringUtils.isNotBlank(designItemsXml)) {
+			NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItems");
+			if (nodes != null && nodes.getLength() > 0) {
+				Element parent = (Element)nodes.item(0);
+				parent.getParentNode().removeChild(parent);
+			}
+			
+			Node node = DOMUtil.fromString2Doc(designItemsXml).getDocumentElement();
+			node =  doc.importNode(node, true);
+			doc.getDocumentElement().appendChild(node);
+		}
+		
+		return DOMUtil.doc2String(doc);
+	}
+	
+	private Map<String, Element> getItemBindingMap(Document doc) {
+		
+		HashMap<String, Element> map = new HashMap<String, Element>();
+		idlist = new ArrayList<String>();
+		
+		NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItem");
+		for (int index = 0; index < nodes.getLength(); index++) {
+			Element node = (Element)nodes.item(index);
+			map.put(node.getAttribute("binding"), node);
+			idlist.add(node.getAttribute("id"));
+		}
+		
+		return map;
+	}
+	
+	private int getNextId(int id) {
+		while (idlist.contains(id)) {
+			id++;
+		}
+		return id;
 	}
 }

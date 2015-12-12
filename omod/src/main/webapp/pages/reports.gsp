@@ -34,13 +34,13 @@
 		        <td>${report.name}</td>
 		        <td>${report.identifier}</td>
 		        <td> <% if (report.group != null) { %> ${report.group.name} <% } %> </td>
-		        <td>
-					<i class="icon-pencil edit-action" title="${ ui.message("coreapps.edit") }"
-						onclick="location.href='${ ui.pageLink("xreports", "report", [reportId:report.id]) }'"></i>
-						
+		        <td>	
 					<i class="icon-table edit-action" title="${ ui.message("xreports.design") }"
 						onclick="location.href='/${ ui.contextPath() }/module/xreports/reportDesigner.form?reportId=${report.reportId}&refApp=true'"></i>
-						
+					
+					<i class="icon-pencil edit-action" title="${ ui.message("coreapps.edit") }"
+						onclick="location.href='${ ui.pageLink("xreports", "report", [reportId:report.id]) }'"></i>
+							
 					<i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }" onclick="removeReport('${ report }', ${ report.id})"></i>
 				</td>
 		    </tr>
