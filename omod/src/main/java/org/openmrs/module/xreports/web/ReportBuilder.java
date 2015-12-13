@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,8 @@ public class ReportBuilder {
 	private int currentIndex = 0;
 	
 	private Map<String, String> fieldMapping = new HashMap<String, String>();
+	
+	private boolean columnFoundInDataset = false;
 	
 	public String build(String xml, String queryStr, XReport report, ReportCommandObject reportParamData) throws Exception {
 		
@@ -290,75 +293,85 @@ public class ReportBuilder {
 			int currentY = tableTop + lineY;
 			int currentTableIndex = 0;
 			
-			String dataSetName = reportData.getDataSets().keySet().iterator().next();
-			DataSet ds = reportData.getDataSets().get(dataSetName);
-			for (DataSetRow row : ds) {
-				currentTableIndex++;
-				
-				if (++currentIndex > 1) {
-					currentY += increment;
-					lineY += increment;
-					tableHeight += increment;
+			Iterator<String> iterator = reportData.getDataSets().keySet().iterator();
+			while (iterator.hasNext()) {
+				columnFoundInDataset = false;
+				currentIndex = 0;
+				currentTableIndex = 0;
+				String dataSetName = iterator.next();
+				DataSet ds = reportData.getDataSets().get(dataSetName);
+				for (DataSetRow row : ds) {
+					currentTableIndex++;
 					
-					if (currentY > pageBottom) {
-						tableHeight -= increment;
-						
-						s = tableHeight + "px";
-						tableElement.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
-						for (Element line : verticalLines) {
-							line.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
+					if (++currentIndex > 1) {
+						if (currentIndex == 2 && !columnFoundInDataset) {
+							break;
 						}
 						
-						currentTableIndex = 1;
+						currentY += increment;
+						lineY += increment;
+						tableHeight += increment;
 						
-						lineY = orgLineY;
-						tableHeight = orgTableHeight;
-						tableTop = pageBottom + (secondPage - pageHeight) + pageMargin;
-						currentY = tableTop + lineY;
-						noPages++;
-						pageBottom = (noPages * pageHeight) - pageMargin;;
-						
-						tableElement = (Element)cloneTableElement.cloneNode(true);
-						tableElement.setAttribute(LayoutConstants.PROPERTY_TOP, tableTop + "px");
-						tableParent.appendChild(tableElement);
-						
-						verticalLines.clear();
-						NodeList nds = tableElement.getElementsByTagName(DesignItem.NAME_ITEM);
-						for (int index = 0; index < nds.getLength(); index++) {
-							Element element = (Element) nds.item(index);
-							String widgetType = element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE);
-							if (LayoutConstants.TYPE_VERTICAL_LINE.equals(widgetType)) {
-								verticalLines.add(element);
+						if (currentY > pageBottom) {
+							tableHeight -= increment;
+							
+							s = tableHeight + "px";
+							tableElement.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
+							for (Element line : verticalLines) {
+								line.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
 							}
+							
+							currentTableIndex = 1;
+							
+							lineY = orgLineY;
+							tableHeight = orgTableHeight;
+							tableTop = pageBottom + (secondPage - pageHeight) + pageMargin;
+							currentY = tableTop + lineY;
+							noPages++;
+							pageBottom = (noPages * pageHeight) - pageMargin;;
+							
+							tableElement = (Element)cloneTableElement.cloneNode(true);
+							tableElement.setAttribute(LayoutConstants.PROPERTY_TOP, tableTop + "px");
+							tableParent.appendChild(tableElement);
+							
+							verticalLines.clear();
+							NodeList nds = tableElement.getElementsByTagName(DesignItem.NAME_ITEM);
+							for (int index = 0; index < nds.getLength(); index++) {
+								Element element = (Element) nds.item(index);
+								String widgetType = element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE);
+								if (LayoutConstants.TYPE_VERTICAL_LINE.equals(widgetType)) {
+									verticalLines.add(element);
+								}
+							}
+						}
+						
+						if (currentTableIndex > 1) {
+							//Add separator horizontal line
+							Element item = doc.createElement(DesignItem.NAME_ITEM);
+							tableElement.appendChild(item);
+							
+							copyAttributes(item, lineElement);
+							item.setAttribute(LayoutConstants.PROPERTY_TOP, lineY + "px");
+							item.setAttribute(LayoutConstants.PROPERTY_WIDGETTYPE, LayoutConstants.TYPE_HORIZONTAL_LINE);
 						}
 					}
 					
-					if (currentTableIndex > 1) {
-						//Add separator horizontal line
+					//Add xpos items for the current row
+					for (int i = 0; i < nodes.getLength(); i++) {
+						Element element = (Element) nodes.item(i);
+						
+						s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+						int ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+						ypos += (increment * (currentTableIndex - 1));
+						
 						Element item = doc.createElement(DesignItem.NAME_ITEM);
 						tableElement.appendChild(item);
 						
-						copyAttributes(item, lineElement);
-						item.setAttribute(LayoutConstants.PROPERTY_TOP, lineY + "px");
-						item.setAttribute(LayoutConstants.PROPERTY_WIDGETTYPE, LayoutConstants.TYPE_HORIZONTAL_LINE);
+						copyAttributes(item, element);
+						item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
+						item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
+						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
 					}
-				}
-				
-				//Add xpos items for the current row
-				for (int i = 0; i < nodes.getLength(); i++) {
-					Element element = (Element) nodes.item(i);
-					
-					s = element.getAttribute(DesignItem.PROPERTY_YPOS);
-					int ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
-					ypos += (increment * (currentTableIndex - 1));
-					
-					Element item = doc.createElement(DesignItem.NAME_ITEM);
-					tableElement.appendChild(item);
-					
-					copyAttributes(item, element);
-					item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
-					item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
-					item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
 				}
 			}
 			
@@ -404,39 +417,48 @@ public class ReportBuilder {
 				int ypos = -1;
 				int increment = 30;
 				
-				String dataSetName = reportData.getDataSets().keySet().iterator().next();
-				DataSet ds = reportData.getDataSets().get(dataSetName);
-				for (DataSetRow row : ds) {
-					currentIndex++;
-					
-					if (ypos != -1) {
-						ypos += increment;
-					}
-					
-					if (ypos > pageBottom) {
-						ypos = (noPages * pageHeight) + pageMargin;
-						noPages++;
-						pageBottom = (noPages * pageHeight) - pageMargin;
-					}
-					
-					for (int i = 0; i < nodes.getLength(); i++) {
-						Element element = (Element) nodes.item(i);
+				Iterator<String> iterator = reportData.getDataSets().keySet().iterator();
+				while (iterator.hasNext()) {
+					columnFoundInDataset = false;
+					currentIndex = 0;
+					String dataSetName = iterator.next();
+					DataSet ds = reportData.getDataSets().get(dataSetName);
+					for (DataSetRow row : ds) {
+						currentIndex++;
 						
-						if (ypos == -1) {
-							s = element.getAttribute(DesignItem.PROPERTY_YPOS);
-							ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
-							if (secondPos != null) {
-								increment = secondPos - ypos;
-							}
+						if (currentIndex == 2 && !columnFoundInDataset) {
+							break;
 						}
 						
-						Element item = doc.createElement(DesignItem.NAME_ITEM);
-						doc.getDocumentElement().appendChild(item);
+						if (ypos != -1) {
+							ypos += increment;
+						}
 						
-						copyAttributes(item, element);
-						item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
-						item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
-						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
+						if (ypos > pageBottom) {
+							ypos = (noPages * pageHeight) + pageMargin;
+							noPages++;
+							pageBottom = (noPages * pageHeight) - pageMargin;
+						}
+						
+						for (int i = 0; i < nodes.getLength(); i++) {
+							Element element = (Element) nodes.item(i);
+							
+							if (ypos == -1) {
+								s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+								ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+								if (secondPos != null) {
+									increment = secondPos - ypos;
+								}
+							}
+							
+							Element item = doc.createElement(DesignItem.NAME_ITEM);
+							doc.getDocumentElement().appendChild(item);
+							
+							copyAttributes(item, element);
+							item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
+							item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
+							item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
+						}
 					}
 				}
 				
@@ -809,9 +831,11 @@ public class ReportBuilder {
 			else {
 				Object value = row.getColumnValue(binding);
 				if (value instanceof Date) {
+					columnFoundInDataset = true;
 					return Context.getDateFormat().format(value);
 				}
 				if (value != null) {
+					columnFoundInDataset = true;
 					return value.toString();
 				}
 			}
