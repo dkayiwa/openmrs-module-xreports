@@ -168,65 +168,131 @@ public class ReportDownloadServlet extends HttpServlet {
 				
 				for (String property : ((SimplePatientDataSetDefinition) def).getPatientProperties()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + property + "' text='" + property + "' sourceType='Custom' />";
+					Element node = map.get(property);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + property + "' text='" + property + "' sourceType='Custom' />";
+					}
 				}
 				for (PersonAttributeType attribute : ((SimplePatientDataSetDefinition) def).getPersonAttributeTypes()) {
 					id = getNextId(id);
 					String property = StringEscapeUtils.escapeXml(attribute.getName());
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + attribute.getId() + "' text='" + property + "' sourceType='Custom' />";
+					Element node = map.get(property);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + attribute.getId() + "' text='" + property + "' sourceType='Custom' />";
+					}
 				}
 				for (PatientIdentifierType identifier : ((SimplePatientDataSetDefinition) def).getIdentifierTypes()) {
 					id = getNextId(id);
 					String property = StringEscapeUtils.escapeXml(identifier.getName());
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
+					Element node = map.get(property);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof CohortIndicatorDataSetDefinition) {
 				for (CohortIndicatorAndDimensionColumn col : ((CohortIndicatorDataSetDefinition) def).getColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof CohortCrossTabDataSetDefinition) {
 				for (CohortDataSetColumn col : ((CohortCrossTabDataSetDefinition) def).getDataSetColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof CohortIndicatorAndDimensionDataSetDefinition) {
 				for (CohortIndicatorAndDimensionSpecification col : ((CohortIndicatorAndDimensionDataSetDefinition) def).getSpecifications()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getIndicatorNumber() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getIndicatorNumber() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof CohortsWithVaryingParametersDataSetDefinition) {
 				for (Column col : ((CohortsWithVaryingParametersDataSetDefinition) def).getColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof DataExportDataSetDefinition) {
 				for (ExportColumn col : ((DataExportDataSetDefinition) def).getDataExport().getColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof LogicDataSetDefinition) {
 				for (LogicDataSetDefinition.Column col : ((LogicDataSetDefinition) def).getColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof RowPerObjectDataSetDefinition) {
 				for (DataSetColumn col : ((RowPerObjectDataSetDefinition) def).getDataSetColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof SimpleIndicatorDataSetDefinition) {
 				for (SimpleIndicatorColumn col : ((SimpleIndicatorDataSetDefinition) def).getColumns()) {
 					id = getNextId(id);
-					xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					Element node = map.get(col);
+					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+					}
+					else {
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
+					}
 				}
 			}
 			else if (def instanceof SqlDataSetDefinition) {

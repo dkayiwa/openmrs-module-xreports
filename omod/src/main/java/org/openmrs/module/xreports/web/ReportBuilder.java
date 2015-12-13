@@ -128,7 +128,7 @@ public class ReportBuilder {
 			NodeList nodes = doc.getDocumentElement().getElementsByTagName(DesignItem.NAME_PT_POS);
 			for (index = 0; index < nodes.getLength(); index++) {
 				Node node = nodes.item(index);
-				buildPtPosItems(doc, (Element)node);
+				buildPtPosItems(doc, (Element)node, null);
 			}
 			
 			loadCustomItems();
@@ -182,6 +182,47 @@ public class ReportBuilder {
 		}
 		
 		buildXPosItems(reportData, doc);
+		
+		//now point pos items'
+		String TYPE_PT_POS = "1";
+		fieldMapping.clear();
+		for (int index = 0; index < nodes.getLength(); index++) {
+			Element node = (Element)nodes.item(index);
+			if (TYPE_PT_POS.equals(node.getAttribute("type"))) {
+				fieldMapping.put(node.getAttribute("id"), node.getAttribute("binding"));
+			}
+		}
+		
+		nodes = doc.getDocumentElement().getElementsByTagName(DesignItem.NAME_PT_POS);
+		for (int index = 0; index < nodes.getLength(); index++) {
+			Node node = nodes.item(index);
+			
+			columnFoundInDataset = false;
+			
+			Iterator<String> iterator = reportData.getDataSets().keySet().iterator();
+			while (iterator.hasNext()) {
+				String dataSetName = iterator.next();
+				DataSet ds = reportData.getDataSets().get(dataSetName);
+				DataSetRow row = getPtPosRow(ds.iterator());
+				
+				buildPtPosItems(doc, (Element)node, row);
+				
+				if (columnFoundInDataset) {
+					break;
+				}
+			}
+		}
+	}
+		
+	private DataSetRow getPtPosRow(Iterator<DataSetRow> iterator) {
+		if (!iterator.hasNext()) {
+			return null;
+		}
+		DataSetRow row = iterator.next();
+		if (iterator.hasNext()) {
+			return null;
+		}
+		return row;
 	}
 	
 	public String getReportData(ReportData reportData, Document doc) throws Exception {
@@ -270,10 +311,10 @@ public class ReportBuilder {
 						}
 					}
 					
-					if (ptPosItem != null) {
+					/*if (ptPosItem != null) {
 						ptPosItem.getParentNode().removeChild(ptPosItem);
 						index--;
-					}
+					}*/
 				}
 			}
 			
@@ -402,9 +443,9 @@ public class ReportBuilder {
 					}
 				}
 				
-				if (ptPosItem != null) {
+				/*if (ptPosItem != null) {
 					ptPosItem.getParentNode().removeChild(ptPosItem);
-				}
+				}*/
 			}
 			
 			
@@ -596,7 +637,7 @@ public class ReportBuilder {
 		return parameters;
 	}
 	
-	private void buildPtPosItems(Document doc, Element ptPosElement) throws Exception {
+	private void buildPtPosItems(Document doc, Element ptPosElement, DataSetRow row) throws Exception {
 		NodeList nodes = ptPosElement.getElementsByTagName(DesignItem.NAME_ITEM);
 		if (nodes == null || nodes.getLength() == 0) {
 			ptPosElement.getParentNode().removeChild(ptPosElement);
@@ -663,13 +704,13 @@ public class ReportBuilder {
 			if (StringUtils.isNotBlank(value))
 				widgetNode.setAttribute(DesignItem.WIDGET_PROPERTY_WIDTH, value);
 
-			setValue(item, widgetNode);
+			setValue(item, widgetNode, row);
 		}
 		
-		ptPosElement.getParentNode().removeChild(ptPosElement);
+		//ptPosElement.getParentNode().removeChild(ptPosElement);
 	}
 	
-	private void setValue(Element item, Element widgetNode) throws Exception {
+	private void setValue(Element item, Element widgetNode, DataSetRow row) throws Exception {
 		String sourceType = item.getAttribute(SOURCE_TYPE);
 		if (SQL.equals(sourceType)) {
 			String sql = item.getAttribute(SOURCE_VALUE);
@@ -708,6 +749,9 @@ public class ReportBuilder {
 				}
 				widgetNode.setAttribute(DesignItem.WIDGET_PROPERTY_TEXT, prefix + sValue + suffix);
 			}
+		}
+		else if (row != null) {
+			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(item.getAttribute(DesignItem.PROPERTY_ID), row));
 		}
 		else if (CUSTOM.equals(sourceType)) {
 			customItems.put(item, widgetNode);
