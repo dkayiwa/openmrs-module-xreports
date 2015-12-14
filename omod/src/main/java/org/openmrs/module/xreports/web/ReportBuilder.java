@@ -418,7 +418,7 @@ public class ReportBuilder {
 							copyAttributes(item, element);
 							item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
 							item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
-							item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
+							item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element, row));
 						}
 						
 						if (currentIndex == 1 && columnFoundInDataset) {
@@ -515,7 +515,7 @@ public class ReportBuilder {
 						copyAttributes(item, element);
 						item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
 						item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
-						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element.getAttribute(LayoutConstants.PROPERTY_ID), row));
+						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element, row));
 					}
 				}
 			}
@@ -767,7 +767,7 @@ public class ReportBuilder {
 			}
 		}
 		else if (row != null) {
-			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(item.getAttribute(DesignItem.PROPERTY_ID), row));
+			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(item, row));
 		}
 		else if (CUSTOM.equals(sourceType)) {
 			customItems.put(item, widgetNode);
@@ -882,9 +882,20 @@ public class ReportBuilder {
 		return item;
 	}
 	
-	public String getValue(String designItemId, DataSetRow row) {
+	public String getValue(Element item, DataSetRow row) {
+		String designItemId = item.getAttribute(DesignItem.PROPERTY_ID);
 		String binding = fieldMapping.get(designItemId);
 		if (binding != null) {
+
+			String prefix = item.getAttribute(PREFIX);
+			if (prefix == null) {
+				prefix = "";
+			}
+			String suffix = item.getAttribute(SUFFIX);
+			if (suffix == null) {
+				suffix = "";
+			}
+			
 			if ("Numbering".equalsIgnoreCase(binding)) {
 				return currentIndex + ".";
 			}
@@ -892,11 +903,11 @@ public class ReportBuilder {
 				Object value = row.getColumnValue(binding);
 				if (value instanceof Date) {
 					columnFoundInDataset = true;
-					return Context.getDateFormat().format(value);
+					return prefix + Context.getDateFormat().format(value) + suffix;
 				}
 				if (value != null) {
 					columnFoundInDataset = true;
-					return value.toString();
+					return prefix + value.toString() + suffix;
 				}
 			}
 		}

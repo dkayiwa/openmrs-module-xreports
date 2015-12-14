@@ -170,6 +170,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(property);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
+						xml += copyAttributes(property, property, node);
 						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
 					}
 					else {
@@ -181,7 +182,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					String property = StringEscapeUtils.escapeXml(attribute.getName());
 					Element node = map.get(property);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(property, attribute.getId().toString(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + attribute.getId() + "' text='" + property + "' sourceType='Custom' />";
@@ -192,7 +193,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					String property = StringEscapeUtils.escapeXml(identifier.getName());
 					Element node = map.get(property);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(property, identifier.getId().toString(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
@@ -204,7 +205,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
@@ -216,7 +217,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getName() + "' sourceType='Custom' />";
@@ -228,7 +229,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getIndicatorNumber(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getIndicatorNumber() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
@@ -240,7 +241,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
@@ -252,7 +253,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getColumnName(), col.getColumnName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
@@ -264,7 +265,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
@@ -276,7 +277,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
@@ -288,7 +289,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col.getLabel(), col.getName(), node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col.getLabel() + "' binding='" + col.getName() + "' text='" + col.getLabel() + "' sourceType='Custom' />";
@@ -301,7 +302,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					id = getNextId(id);
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + col + "' binding='" + col + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
+						xml += copyAttributes(col, col, node);
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col + "' binding='" + col + "' text='" + col + "' sourceType='Custom' />";
@@ -316,6 +317,15 @@ public class ReportDownloadServlet extends HttpServlet {
 		
 		return xml;
 		//return " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR " + xml;
+	}
+	
+	private String copyAttributes(String name, String binding, Element node) {
+		return "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + name +
+				"' binding='" + binding + "' text='" + node.getAttribute("text") + 
+				"' description='" + node.getAttribute("description") + "' prefix='" + node.getAttribute("prefix") +
+				"' suffix='" + node.getAttribute("suffix") + "' dataType='" + node.getAttribute("dataType") +
+				"' sourceValue='" + node.getAttribute("sourceValue") + "' otherData='" + node.getAttribute("otherData") +
+				"' sourceType='Custom' />";
 	}
 	
 	private String mergeDesignItems(Document doc, String designItemsXml) throws Exception {
