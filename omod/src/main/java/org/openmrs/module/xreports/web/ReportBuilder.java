@@ -897,7 +897,7 @@ public class ReportBuilder {
 			}
 			
 			if ("Numbering".equalsIgnoreCase(binding)) {
-				return currentIndex + ".";
+				return prefix + currentIndex + suffix;
 			}
 			else {
 				Object value = row.getColumnValue(binding);

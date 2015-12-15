@@ -67,6 +67,7 @@ public class ReportDownloadServlet extends HttpServlet {
 	public static final String REQUEST_PARAM_REPORT_ID = "formId";
 	
 	private List<String> idlist;
+	private List<Element> customItems;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -337,24 +338,74 @@ public class ReportDownloadServlet extends HttpServlet {
 				parent.getParentNode().removeChild(parent);
 			}
 			
-			Node node = DOMUtil.fromString2Doc(designItemsXml).getDocumentElement();
-			node =  doc.importNode(node, true);
-			doc.getDocumentElement().appendChild(node);
+			Node designItemsNode = DOMUtil.fromString2Doc(designItemsXml).getDocumentElement();
+			designItemsNode =  doc.importNode(designItemsNode, true);
+			doc.getDocumentElement().appendChild(designItemsNode);
+			
+			//now add user custom design items
+			for (Element item : customItems) {
+				List<String> bindings = new ArrayList<String>();
+				Element parent = (Element)item.getParentNode();
+				while (parent != null) {
+					String binding = parent.getAttribute("binding");
+					if (StringUtils.isNotBlank(binding)) {
+						bindings.add(binding);
+					}
+					else {
+						break;
+					}
+					
+					parent = (Element)parent.getParentNode();
+				}
+				
+				while (bindings.size() > 0) {
+					int index = bindings.size() -1;
+					String binding = bindings.get(index);
+					Element node = getNode(binding, designItemsNode.getChildNodes());
+					if (node == null) {
+						break;
+					}
+					
+					bindings.remove(index);
+					
+					if (bindings.size() == 0) {
+						Node importedNode =  doc.importNode(item, true);
+						node.appendChild(importedNode);
+					}
+				}
+			}
 		}
 		
 		return DOMUtil.doc2String(doc);
+	}
+	
+	private Element getNode(String binding, NodeList nodes) {
+		for (int index = 0; index < nodes.getLength(); index++) {
+			Element node = (Element)nodes.item(index);
+			if (binding.equals(node.getAttribute("binding"))) {
+				return node;
+			}
+		}
+		return null;
 	}
 	
 	private Map<String, Element> getItemBindingMap(Document doc) {
 		
 		HashMap<String, Element> map = new HashMap<String, Element>();
 		idlist = new ArrayList<String>();
+		customItems = new ArrayList<Element>();
 		
 		NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItem");
 		for (int index = 0; index < nodes.getLength(); index++) {
 			Element node = (Element)nodes.item(index);
-			map.put(node.getAttribute("binding"), node);
+			String binding = node.getAttribute("binding");
+			map.put(binding, node);
 			idlist.add(node.getAttribute("id"));
+			
+			String sourceValue = node.getAttribute("sourceValue");
+			if ("Numbering".equalsIgnoreCase(binding) || StringUtils.isNotBlank(sourceValue)) {
+				customItems.add(node);
+			}
 		}
 		
 		return map;
