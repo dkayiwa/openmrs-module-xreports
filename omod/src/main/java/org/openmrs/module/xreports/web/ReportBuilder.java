@@ -488,7 +488,7 @@ public class ReportBuilder {
 						break;
 					}
 					
-					if (ypos != -1) {
+					if (currentIndex > 1) {
 						ypos += increment;
 					}
 					
