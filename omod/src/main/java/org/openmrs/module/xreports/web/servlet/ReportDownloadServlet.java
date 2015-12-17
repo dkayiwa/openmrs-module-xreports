@@ -172,7 +172,6 @@ public class ReportDownloadServlet extends HttpServlet {
 					Element node = map.get(property);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
 						xml += copyAttributes(property, property, node);
-						xml += "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + property + "' binding='" + property + "' text='" + node.getAttribute("text") + "' sourceType='Custom' />";
 					}
 					else {
 						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + property + "' text='" + property + "' sourceType='Custom' />";
@@ -316,6 +315,8 @@ public class ReportDownloadServlet extends HttpServlet {
 		
 		xml += "</DesignItems>";
 		
+		System.out.println(xml);
+		
 		return xml;
 		//return " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR " + xml;
 	}
@@ -330,7 +331,7 @@ public class ReportDownloadServlet extends HttpServlet {
 	}
 	
 	private String mergeDesignItems(Document doc, String designItemsXml) throws Exception {
-
+		
 		if (StringUtils.isNotBlank(designItemsXml)) {
 			NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItems");
 			if (nodes != null && nodes.getLength() > 0) {

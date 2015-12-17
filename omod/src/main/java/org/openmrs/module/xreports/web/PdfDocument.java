@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.module.xreports.DOMUtil;
@@ -123,7 +126,6 @@ public class PdfDocument {
 			Document document = createNewDocument(doc);
 			PdfWriter writer = PdfWriter.getInstance(document, os);
 			document.open();
-			
 			generate(doc, document, writer, realPath);
 
 			document.close();
@@ -188,12 +190,14 @@ public class PdfDocument {
 		
 		String parentWidth = null;
 	    
-	    for (int index = 0; index < nodes.getLength(); index++) {
-	    	org.w3c.dom.Element element = (org.w3c.dom.Element) nodes.item(index);
+		List<ReportItem> items = getSortedReportItems(nodes);
+	    //for (int index = 0; index < nodes.getLength(); index++) {
+		for (ReportItem reportItem : items) {
+	    	//org.w3c.dom.Element element = (org.w3c.dom.Element) nodes.item(index);
+			org.w3c.dom.Element element = reportItem.getNode();
 	    	org.w3c.dom.Element parentElement = (org.w3c.dom.Element)element.getParentNode();
 
 	    	if (LayoutConstants.TYPE_LABEL.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
-	    		
 	    		String text = element.getAttribute(LayoutConstants.PROPERTY_TEXT);
 	    		String width = element.getAttribute(LayoutConstants.PROPERTY_WIDTH);
 	    		if (StringUtils.isBlank(text)) {
@@ -227,6 +231,7 @@ public class PdfDocument {
 					pageBottom = (noPages * pageHeight) - pageMargin;
 					
 					document.newPage();
+					bottom = document.getPageSize().getTop();
 				}
 	    		
 	    		y = y - prevPageBottom;
@@ -274,7 +279,8 @@ public class PdfDocument {
 	    	    
 	    	    cb.setFontAndSize(font, size);
 	    	    
-	    	    if (StringUtils.isNotBlank(width) && StringUtils.isNotBlank(height) && !width.equals("100%")) {
+	    	    //this first if i temporarily disabled for now because its buggy
+	    	    if (false && StringUtils.isNotBlank(width) && StringUtils.isNotBlank(height) && !width.equals("100%")) {
 	    	    	float w = Float.parseFloat(width.substring(0, width.length() - 2));
 	    	    	w = (w * 72) / denominator;
 	    	    	ColumnText ct = new ColumnText(cb);
@@ -306,7 +312,7 @@ public class PdfDocument {
 	    	    			}
 	    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
 
-	    		    	    ypos = bottom - (((h + parentTop - diff) * 72) / denominator);
+	    		    	    ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
 	    		    	    ypos += DEPTH;
 	    		    	    
 	    	    			drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
@@ -322,20 +328,20 @@ public class PdfDocument {
 		    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
 		    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
 		    	    			
-		    	    			ypos = bottom - (((h + parentTop - diff) * 72) / denominator);
-		    		    	    ypos += DEPTH;
+		    	    			//ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
+		    		    	    //ypos += DEPTH;
 		    		    	    
 		    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
 		    		    	    
 		    	    			if (align == PdfContentByte.ALIGN_CENTER) {
-		    	    				cb.showTextAligned(align, text, w/2, ypos - 3, 0);
+		    	    				cb.showTextAligned(align, text, (xpos + w/2), ypos, 0);
 		    	    			}
 		    	    			else {
 		    	    				cb.showTextAligned(align, text, xpos + w, ypos, 0);
 		    	    			}
 	    	    			}
 	    	    			else {
-	    	    				cb.showTextAligned(align, text, xpos + w, ypos, 0);
+	    	    				cb.showTextAligned(align, text, (xpos + w/2), ypos, 0);
 	    	    			}
 	    	    		}
 	    	    	}
@@ -348,7 +354,7 @@ public class PdfDocument {
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
 	    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
 	    	    			
-	    	    			ypos = bottom - (((h + parentTop - diff) * 72) / denominator);
+	    	    			ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
 	    		    	    ypos += DEPTH;
 	    		    	    
 	    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
@@ -406,6 +412,7 @@ public class PdfDocument {
 					pageBottom = (noPages * pageHeight) - pageMargin;
 					
 					document.newPage();
+					bottom = document.getPageSize().getTop();
 				}
 	    		
 	    		y = y - prevPageBottom;
@@ -489,6 +496,7 @@ public class PdfDocument {
 					pageBottom = (noPages * pageHeight) - pageMargin;
 					
 					document.newPage();
+					bottom = document.getPageSize().getTop();
 				}
 	    		
 	    		y = y - prevPageBottom;
@@ -565,6 +573,7 @@ public class PdfDocument {
 					pageBottom = (noPages * pageHeight) - pageMargin;
 					
 					document.newPage();
+					bottom = document.getPageSize().getTop();
 				}
 	    		
 	    		y = y - prevPageBottom;
@@ -658,6 +667,7 @@ public class PdfDocument {
 					pageBottom = (noPages * pageHeight) - pageMargin;
 					
 					document.newPage();
+					bottom = document.getPageSize().getTop();
 				}
 	    		
 	    		y = y - prevPageBottom;
@@ -736,6 +746,7 @@ public class PdfDocument {
 						pageBottom = (noPages * pageHeight) - pageMargin;
 						
 						document.newPage();
+						bottom = document.getPageSize().getTop();
 					}
 		    		
 		    		y = y - prevPageBottom;
@@ -795,5 +806,60 @@ public class PdfDocument {
 		count += FontFactory.registerDirectory("/System/Library/Fonts"); 
 		
 		return count;
+	}
+	
+	private List<ReportItem> getSortedReportItems(NodeList nodes) {
+		List<ReportItem> items = new ArrayList<ReportItem>();
+		
+		for (int index = 0; index < nodes.getLength(); index++) {
+	    	org.w3c.dom.Element element = (org.w3c.dom.Element) nodes.item(index);
+	    	items.add(new ReportItem(element));
+		}
+		
+		Collections.sort(items);
+		
+		return items;
+	}
+	
+	private class ReportItem implements Comparable<ReportItem> {
+
+		private org.w3c.dom.Element node;
+		private Float xpos;
+		
+		public ReportItem (org.w3c.dom.Element node) {
+			this.node = node;
+			
+			String parentTop = null;
+			org.w3c.dom.Element parentElement = (org.w3c.dom.Element)node.getParentNode();
+			if (LayoutConstants.TYPE_TABLE.equals(parentElement.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) ||
+    				LayoutConstants.TYPE_GROUPBOX.equals(parentElement.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+				parentTop = parentElement.getAttribute(LayoutConstants.PROPERTY_TOP);
+			}
+			
+			String top = node.getAttribute(LayoutConstants.PROPERTY_TOP);
+			if (StringUtils.isNotBlank(top)) {
+				this.xpos = Float.parseFloat(top.substring(0, top.length() - 2));
+			}
+			else {
+				this.xpos = 0f;
+			}
+			
+			if (parentTop != null) {
+				this.xpos += Float.parseFloat(parentTop.substring(0, parentTop.length() - 2));
+			}
+		}
+		
+		@Override
+		public int compareTo(ReportItem o) {
+			return xpos.compareTo(o.getXpos());
+		}
+		
+		public org.w3c.dom.Element getNode() {
+			return node;
+		}
+		
+		public Float getXpos() {
+			return xpos;
+		}
 	}
 }

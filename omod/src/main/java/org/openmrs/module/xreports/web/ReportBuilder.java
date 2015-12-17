@@ -70,11 +70,14 @@ public class ReportBuilder {
 	private int currentIndex = 0;
 	
 	private Map<String, String> fieldMapping = new HashMap<String, String>();
+	private Map<String, Element> designItemMap = new HashMap<String, Element>();
+	private Map<String, Integer> ptPosXDisp = new HashMap<String, Integer>();
+	private Map<String, Integer> ptPosYDisp = new HashMap<String, Integer>();
 	
 	private boolean columnFoundInDataset = false;
 	
 	public String build(String xml, String queryStr, XReport report, ReportCommandObject reportParamData) throws Exception {
-		
+
 		service = Context.getService(XReportsService.class);
 		
 		numberFormat = new DecimalFormat(Context.getAdministrationService().getGlobalProperty("xreports.format.number", "###,###.###"));
@@ -128,7 +131,7 @@ public class ReportBuilder {
 			NodeList nodes = doc.getDocumentElement().getElementsByTagName(DesignItem.NAME_PT_POS);
 			for (index = 0; index < nodes.getLength(); index++) {
 				Node node = nodes.item(index);
-				buildPtPosItems(doc, (Element)node, null);
+				buildPtPosItems(doc, (Element)node, null, null);
 			}
 			
 			loadCustomItems();
@@ -178,6 +181,7 @@ public class ReportBuilder {
 			Element node = (Element)nodes.item(index);
 			if (TYPE_XPOS.equals(node.getAttribute("type"))) {
 				fieldMapping.put(node.getAttribute("id"), node.getAttribute("binding"));
+				designItemMap.put(node.getAttribute("id"), node);
 			}
 		}
 		
@@ -205,7 +209,7 @@ public class ReportBuilder {
 				DataSet ds = reportData.getDataSets().get(dataSetName);
 				DataSetRow row = getPtPosRow(ds.iterator());
 				
-				buildPtPosItems(doc, (Element)node, row);
+				buildPtPosItems(doc, (Element)node, row, dataSetName);
 				
 				if (columnFoundInDataset) {
 					break;
@@ -335,6 +339,57 @@ public class ReportBuilder {
 					xposItem = (Element)nodes.item(0);
 					nodes = xposItem.getElementsByTagName(DesignItem.NAME_ITEM);
 				}
+				
+				//compute the displacement size of the pt pos in x pos items
+				ptPosXDisp.clear();
+				ptPosYDisp.clear();
+				NodeList ptPosItemNodes = null;
+				NodeList ptPosNodes = tableElement.getElementsByTagName(DesignItem.NAME_PT_POS);
+				if (ptPosNodes != null && ptPosNodes.getLength() > 0) {
+					
+					ptPosItemNodes = ((Element)ptPosNodes.item(0)).getElementsByTagName(DesignItem.NAME_ITEM);
+					
+					for (int index = 0; index < ptPosItemNodes.getLength(); index++) {
+						Element ptItem = (Element)ptPosItemNodes.item(index);
+						
+						s = ptItem.getAttribute(DesignItem.PROPERTY_XPOS);
+						int ptXpos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+						
+						int minXdiff = Integer.MAX_VALUE;
+						int yDiff = 0;
+						
+						for (int i = 0; i < nodes.getLength(); i++) {
+							Element element = (Element) nodes.item(i);
+							
+							if ("Numbering".equalsIgnoreCase(element.getAttribute("Binding"))) {
+								continue;
+							}
+							
+							s = element.getAttribute(DesignItem.PROPERTY_XPOS);
+							int orgXpos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+							
+							int diff = orgXpos - ptXpos;
+							if (diff < minXdiff) {
+								minXdiff = diff;
+							}
+							
+							if (yDiff == 0) {
+								s = ptItem.getAttribute(DesignItem.PROPERTY_YPOS);
+								int ptYpos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+								
+								s = element.getAttribute(DesignItem.PROPERTY_YPOS);
+								int orgYpos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+								
+								yDiff = orgYpos - ptYpos;
+							}
+						}
+						
+						String id = ptItem.getAttribute(DesignItem.PROPERTY_ID);
+						
+						ptPosXDisp.put(id, minXdiff);
+						ptPosYDisp.put(id, yDiff);
+					}
+				}
 	
 				int tableHeight = orgTableHeight;
 				int lineY = orgLineY;
@@ -408,6 +463,11 @@ public class ReportBuilder {
 						for (int i = 0; i < nodes.getLength(); i++) {
 							Element element = (Element) nodes.item(i);
 							
+							String value = getValue(element, row, dataSetName);
+							if (value == null) {
+								continue;
+							}
+							
 							s = element.getAttribute(DesignItem.PROPERTY_YPOS);
 							int ypos = (Integer.parseInt(s.substring(0, s.length() - 2)));
 							ypos += (increment * (currentTableIndex - 1));
@@ -418,7 +478,34 @@ public class ReportBuilder {
 							copyAttributes(item, element);
 							item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
 							item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
-							item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element, row));
+							item.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
+							
+							//add displacement items if any
+							/*if (ptPosItemNodes != null && !"Numbering".equalsIgnoreCase(element.getAttribute("Binding"))) {
+								
+								Element ptPosItemNode = (Element)ptPosItemNodes.item(0);
+								
+								String id = ptPosItemNode.getAttribute(DesignItem.PROPERTY_ID);
+								
+								value = getValue(ptPosItemNode.getAttribute("Binding"), ptPosItemNode, row, dataSetName);
+								if (value == null) {
+									continue;
+								}
+								
+								int xdiff = ptPosXDisp.get(id);
+								int ydiff = ptPosYDisp.get(id);
+								
+								s = element.getAttribute(DesignItem.PROPERTY_XPOS);
+								int xpos = (Integer.parseInt(s.substring(0, s.length() - 2)));
+								
+								item = doc.createElement(DesignItem.NAME_ITEM);
+								tableElement.appendChild(item);
+								
+								copyAttributes(item, ptPosItemNode);
+								item.setAttribute(LayoutConstants.PROPERTY_LEFT, (xpos - xdiff) + "px");
+								item.setAttribute(LayoutConstants.PROPERTY_TOP, (ypos - ydiff) + "px");
+								item.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
+							}*/
 						}
 						
 						if (currentIndex == 1 && columnFoundInDataset) {
@@ -515,7 +602,7 @@ public class ReportBuilder {
 						copyAttributes(item, element);
 						item.setAttribute(LayoutConstants.PROPERTY_LEFT, element.getAttribute(DesignItem.PROPERTY_XPOS));
 						item.setAttribute(LayoutConstants.PROPERTY_TOP, ypos + "px");
-						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element, row));
+						item.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(element, row, dataSetName));
 					}
 				}
 			}
@@ -653,7 +740,7 @@ public class ReportBuilder {
 		return parameters;
 	}
 	
-	private void buildPtPosItems(Document doc, Element ptPosElement, DataSetRow row) throws Exception {
+	private void buildPtPosItems(Document doc, Element ptPosElement, DataSetRow row, String dataSetName) throws Exception {
 		NodeList nodes = ptPosElement.getElementsByTagName(DesignItem.NAME_ITEM);
 		if (nodes == null || nodes.getLength() == 0) {
 			ptPosElement.getParentNode().removeChild(ptPosElement);
@@ -720,13 +807,13 @@ public class ReportBuilder {
 			if (StringUtils.isNotBlank(value))
 				widgetNode.setAttribute(DesignItem.WIDGET_PROPERTY_WIDTH, value);
 
-			setValue(item, widgetNode, row);
+			setValue(item, widgetNode, row, dataSetName);
 		}
 		
 		//ptPosElement.getParentNode().removeChild(ptPosElement);
 	}
 	
-	private void setValue(Element item, Element widgetNode, DataSetRow row) throws Exception {
+	private void setValue(Element item, Element widgetNode, DataSetRow row, String dataSetName) throws Exception {
 		String sourceType = item.getAttribute(SOURCE_TYPE);
 		if (SQL.equals(sourceType)) {
 			String sql = item.getAttribute(SOURCE_VALUE);
@@ -767,7 +854,7 @@ public class ReportBuilder {
 			}
 		}
 		else if (row != null) {
-			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(item, row));
+			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(item, row, dataSetName));
 		}
 		else if (CUSTOM.equals(sourceType)) {
 			customItems.put(item, widgetNode);
@@ -882,9 +969,15 @@ public class ReportBuilder {
 		return item;
 	}
 	
-	public String getValue(Element item, DataSetRow row) {
+	public String getValue(Element item, DataSetRow row, String dataSetName) {
+		return this.getValue(null, item, row, dataSetName);
+	}
+	
+	public String getValue(String binding, Element item, DataSetRow row, String dataSetName) {
 		String designItemId = item.getAttribute(DesignItem.PROPERTY_ID);
-		String binding = fieldMapping.get(designItemId);
+		if (binding == null) {
+			binding = fieldMapping.get(designItemId);
+		}
 		if (binding != null) {
 
 			String prefix = item.getAttribute(PREFIX);
@@ -897,7 +990,10 @@ public class ReportBuilder {
 			}
 			
 			if ("Numbering".equalsIgnoreCase(binding)) {
-				return prefix + currentIndex + suffix;
+				Element node = designItemMap.get(designItemId);
+				if (node != null && dataSetName.equals(((Element)node.getParentNode()).getAttribute("binding"))) {
+					return prefix + currentIndex + suffix;
+				}
 			}
 			else {
 				Object value = row.getColumnValue(binding);
