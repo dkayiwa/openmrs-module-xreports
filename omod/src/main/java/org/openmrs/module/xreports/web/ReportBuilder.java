@@ -481,7 +481,7 @@ public class ReportBuilder {
 							item.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
 							
 							//add displacement items if any
-							/*if (ptPosItemNodes != null && !"Numbering".equalsIgnoreCase(element.getAttribute("Binding"))) {
+							if (ptPosItemNodes != null && !"Numbering".equalsIgnoreCase(element.getAttribute("Binding"))) {
 								
 								Element ptPosItemNode = (Element)ptPosItemNodes.item(0);
 								
@@ -505,7 +505,7 @@ public class ReportBuilder {
 								item.setAttribute(LayoutConstants.PROPERTY_LEFT, (xpos - xdiff) + "px");
 								item.setAttribute(LayoutConstants.PROPERTY_TOP, (ypos - ydiff) + "px");
 								item.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
-							}*/
+							}
 						}
 						
 						if (currentIndex == 1 && columnFoundInDataset) {
