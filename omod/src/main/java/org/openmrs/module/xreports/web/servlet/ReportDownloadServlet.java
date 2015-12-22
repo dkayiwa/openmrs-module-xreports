@@ -127,14 +127,16 @@ public class ReportDownloadServlet extends HttpServlet {
 			}
 			else {
 				String uuid = report.getExternalReportUuid();
-				if (uuid != null) {
+				if (StringUtils.isNotBlank(uuid)) {
 					ReportDefinition reportDef = Context.getService(ReportDefinitionService.class).getDefinitionByUuid(uuid);
-					if (xml == null) {
-						xml = "";
-					}
 					
-					Document doc = DOMUtil.fromString2Doc(xml);
-					xml = mergeDesignItems(doc, getDesignItems(reportDef, doc));
+					if (StringUtils.isBlank(xml)) {
+						xml = " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR " + getDesignItems(reportDef, null);
+					}
+					else {
+						Document doc = DOMUtil.fromString2Doc(xml);
+						xml = mergeDesignItems(doc, getDesignItems(reportDef, doc));
+					}
 				}
 			}
 			
@@ -394,16 +396,18 @@ public class ReportDownloadServlet extends HttpServlet {
 		idlist = new ArrayList<String>();
 		customItems = new ArrayList<Element>();
 		
-		NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItem");
-		for (int index = 0; index < nodes.getLength(); index++) {
-			Element node = (Element)nodes.item(index);
-			String binding = node.getAttribute("binding");
-			map.put(binding, node);
-			idlist.add(node.getAttribute("id"));
-			
-			String sourceValue = node.getAttribute("sourceValue");
-			if ("Numbering".equalsIgnoreCase(binding) || StringUtils.isNotBlank(sourceValue)) {
-				customItems.add(node);
+		if (doc != null) {
+			NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItem");
+			for (int index = 0; index < nodes.getLength(); index++) {
+				Element node = (Element)nodes.item(index);
+				String binding = node.getAttribute("binding");
+				map.put(binding, node);
+				idlist.add(node.getAttribute("id"));
+				
+				String sourceValue = node.getAttribute("sourceValue");
+				if ("Numbering".equalsIgnoreCase(binding) || StringUtils.isNotBlank(sourceValue)) {
+					customItems.add(node);
+				}
 			}
 		}
 		
