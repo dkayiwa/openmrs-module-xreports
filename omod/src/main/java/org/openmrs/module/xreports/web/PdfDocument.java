@@ -725,6 +725,25 @@ public class PdfDocument {
 	            
 	            cb.stroke();
 	            cb.restoreState();
+	            
+	            String bdColor = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
+	            String bgColor = element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR);
+    			if (StringUtils.isNotBlank(bgColor)) {
+    				w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
+
+	    			if (StringUtils.isNotBlank(bgColor) && StringUtils.isNotBlank(width)) {
+	    				if (StringUtils.isBlank(height)) {
+	    					height = "25px";
+	    				}
+    	    			h = Float.parseFloat(height.substring(0, height.length() - 2));
+    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+    	    			
+    	    			//ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
+    		    	    //ypos += DEPTH;
+    		    	    
+    		    	    drawRectangle(cb, xpos, ypos - lengthh, w, ((h * 72) / denominator), bgColor, bdColor);
+	    			}
+    			}
 	    	}
 	    	else if (LayoutConstants.TYPE_LOGO.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String left = element.getAttribute(LayoutConstants.PROPERTY_LEFT);
@@ -846,6 +865,11 @@ public class PdfDocument {
 			
 			if (parentTop != null) {
 				this.xpos += Float.parseFloat(parentTop.substring(0, parentTop.length() - 2));
+			}
+			
+			//make background color transparent
+			if (LayoutConstants.TYPE_GROUPBOX.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+				this.xpos = 0f;
 			}
 		}
 		
