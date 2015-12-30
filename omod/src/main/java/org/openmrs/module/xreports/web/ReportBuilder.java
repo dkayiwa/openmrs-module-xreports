@@ -34,6 +34,7 @@ import org.openmrs.module.xreports.NameValue;
 import org.openmrs.module.xreports.ReportParameter;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.api.XReportsService;
+import org.purcai.web.report.constants.LayoutConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -518,6 +519,9 @@ public class ReportBuilder {
 				s = tableHeight + "px";
 				tableElement.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
 				for (Element line : verticalLines) {
+					s = line.getAttribute(LayoutConstants.PROPERTY_TOP);
+					int top = (Integer.parseInt(s.substring(0, s.length() - 2)));
+					s = (tableHeight - top) + "px";
 					line.setAttribute(LayoutConstants.PROPERTY_HEIGHT, s);
 				}
 				
