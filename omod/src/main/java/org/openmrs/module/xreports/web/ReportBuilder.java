@@ -297,7 +297,7 @@ public class ReportBuilder {
 		}
 		
 		if (secondPage == null) {
-			secondPage = pageHeight + 50;
+			secondPage = pageHeight + pageMargin;
 		}
 
 		List<String> finishedDatasets = new ArrayList<String>();
