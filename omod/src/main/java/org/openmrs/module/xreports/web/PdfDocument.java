@@ -369,14 +369,27 @@ public class PdfDocument {
 	    	    cb.endText();
 	    	    
 	    	    if (StringUtils.isNotBlank(textDecoration) && textDecoration.contains("underline")) {
-	    	    	cb.setLineWidth(1f);
+		            cb.setLineWidth(1f);
 		    	    float length = font.getWidthPoint(text, size);
-		    	    cb.moveTo(xpos, ypos);
-		    	    if ("true".equals(rotated)) {
-		    	    	cb.lineTo(xpos, ypos + length);
-		    	    } else {
-		    	    	cb.lineTo(xpos + length, ypos);
+		    	    
+		    	    if ("right".equals(textAlign)) {
+		    	    	float w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
+		    	    	cb.moveTo(xpos + (w - length), ypos);
+			    	    if ("true".equals(rotated)) {
+			    	    	cb.lineTo(xpos, ypos + length);
+			    	    } else {
+			    	    	cb.lineTo(xpos + w, ypos);
+			    	    }
+    	    		}
+		    	    else {
+		    	    	cb.moveTo(xpos, ypos);
+			    	    if ("true".equals(rotated)) {
+			    	    	cb.lineTo(xpos, ypos + length);
+			    	    } else {
+			    	    	cb.lineTo(xpos + length, ypos);
+			    	    }
 		    	    }
+		    	    
 		            cb.stroke();
 	    	    }
 	    	    
