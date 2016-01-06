@@ -29,15 +29,20 @@
     </thead>
     
     <tbody>
-	    <% groups.each { group -> %>
+	    <% groupsAndDepth.each { groupAndDepth -> %>
 		    <tr>
-		        <td>${group.name}</td>
-		        <td>${group.identifier}</td>
-		        <td> <% if (group.parentGroup != null) { %> ${group.parentGroup.name} <% } %> </td>
+		        <td>
+		        	<% for (i = 1; i <= groupAndDepth.depth; i++) { %>
+		 				&nbsp;&nbsp;
+		 			<% } %>
+		        	${groupAndDepth.group.name}
+		        </td>
+		        <td>${groupAndDepth.group.identifier}</td>
+		        <td> <% if (groupAndDepth.group.parentGroup != null) { %> ${groupAndDepth.group.parentGroup.name} <% } %> </td>
 		        <td>
 					<i class="icon-pencil edit-action" title="${ ui.message("coreapps.edit") }"
-						onclick="location.href='${ ui.pageLink("xreports", "reportGroup", [groupId:group.id]) }'"></i>
-					<i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }" onclick="removeGroup('${ group }', ${ group.id})"></i>
+						onclick="location.href='${ ui.pageLink("xreports", "reportGroup", [groupId:groupAndDepth.group.id]) }'"></i>
+					<i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }" onclick="removeGroup('${ groupAndDepth.group }', ${ groupAndDepth.group.id})"></i>
 				</td>
 		    </tr>
 	    <% } %>
