@@ -12,6 +12,12 @@
     ];
 </script>
 
+<style type="text/css">
+	table thead th  {
+		text-align: center;
+	}
+</style>
+
 <button class="confirm" onclick="location.href='${ ui.pageLink("xreports", "report") }'">
     ${ ui.message("xreports.report.add") }
 </button>
@@ -32,9 +38,9 @@
 	    <% reports.each { report -> %>
 		    <tr>
 		        <td>${report.name}</td>
-		        <td>${report.identifier}</td>
-		        <td> <% if (report.group != null) { %> ${report.group.name} <% } %> </td>
-		        <td>	
+		        <td align="center">${report.identifier}</td>
+		        <td align="center"> <% if (report.group != null) { %> ${report.group.name} <% } %> </td>
+		        <td align="center">	
 					<i class="icon-table edit-action" title="${ ui.message("xreports.design") }"
 						onclick="location.href='/${ ui.contextPath() }/module/xreports/reportDesigner.form?reportId=${report.reportId}&refApp=true'"></i>
 					

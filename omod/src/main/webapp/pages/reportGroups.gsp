@@ -12,6 +12,12 @@
     ];
 </script>
 
+<style type="text/css">
+	table thead th  {
+		text-align: center;
+	}
+</style>
+
 <button class="confirm" onclick="location.href='${ ui.pageLink("xreports", "reportGroup") }'">
     ${ ui.message("xreports.reportGroup.add") }
 </button>
@@ -23,7 +29,6 @@
 	    <tr>
 	        <th>${ ui.message("xreports.name")}</th>
 	        <th>${ ui.message("xreports.identifier")}</th>
-	        <th>${ ui.message("xreports.parent")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
 	    </tr>
     </thead>
@@ -37,9 +42,8 @@
 		 			<% } %>
 		        	${groupAndDepth.group.name}
 		        </td>
-		        <td>${groupAndDepth.group.identifier}</td>
-		        <td> <% if (groupAndDepth.group.parentGroup != null) { %> ${groupAndDepth.group.parentGroup.name} <% } %> </td>
-		        <td>
+		        <td align="center">${groupAndDepth.group.identifier}</td>
+		        <td align="center">
 					<i class="icon-pencil edit-action" title="${ ui.message("coreapps.edit") }"
 						onclick="location.href='${ ui.pageLink("xreports", "reportGroup", [groupId:groupAndDepth.group.id]) }'"></i>
 					<i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }" onclick="removeGroup('${ groupAndDepth.group }', ${ groupAndDepth.group.id})"></i>
