@@ -59,9 +59,9 @@ public class HibernateXReportsDAO implements XReportsDAO {
 	 * @see org.openmrs.module.xreports.api.db.XReportsDAO#getSqlIntValue(java.lang.String)
 	 */
 	@Override
-	public Float getSqlIntValue(String sql) throws Exception {
+	public Object getSqlValue(String sql) throws Exception {
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
-		return (Float)query.uniqueResult();
+		return query.uniqueResult();
 	}
 	
 	/**

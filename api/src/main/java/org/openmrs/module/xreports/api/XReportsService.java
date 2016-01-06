@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface XReportsService extends OpenmrsService {
      
 	/**
-	 * Executes a select sql statement which returns an integer value
+	 * Executes a select sql statement which returns a single value
 	 * 
 	 * @param sql the select sql statement
 	 * @return the integer value if any results, else null
@@ -44,7 +44,7 @@ public interface XReportsService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.SQL_LEVEL_ACCESS)
 	@Transactional(readOnly = true)
-	public Float getSqlIntValue(String sql) throws Exception;
+	public Object getSqlValue(String sql) throws Exception;
 	
 	/**
 	 * Gets all reports

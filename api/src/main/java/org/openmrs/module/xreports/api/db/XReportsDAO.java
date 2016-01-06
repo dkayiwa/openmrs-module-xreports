@@ -25,13 +25,13 @@ import org.openmrs.module.xreports.api.XReportsService;
 public interface XReportsDAO {
 	
 	/**
-	 * Executes a select sql statement which returns an integer value
+	 * Executes a select sql statement which returns a single value
 	 * 
 	 * @param sql the select sql statement
 	 * @return the integer value if any results, else null
 	 * @throws Exception
 	 */
-	public Float getSqlIntValue(String sql) throws Exception;
+	public Object getSqlValue(String sql) throws Exception;
 	
 	/**
 	 * Gets all reports

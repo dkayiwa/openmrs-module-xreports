@@ -645,7 +645,7 @@ public class ReportBuilder {
 			if (SQL.equals(item.getAttribute("sourceType"))) {
 				String sql = item.getAttribute("sourceValue");
 				if (StringUtils.isNotBlank(sql)) {
-					Float value = service.getSqlIntValue(sql);
+					Object value = service.getSqlValue(sql);
 					if (value == null) {
 						value = 0f;
 					}
@@ -821,9 +821,9 @@ public class ReportBuilder {
 		if (SQL.equals(sourceType)) {
 			String sql = item.getAttribute(SOURCE_VALUE);
 			if (StringUtils.isNotBlank(sql)) {
-				Float value = null;
+				Object value = null;
 				try {
-					value = service.getSqlIntValue(sql);
+					value = service.getSqlValue(sql);
 				}
 				catch(Exception ex) {
 					System.out.println(sql);
