@@ -34,7 +34,6 @@ import org.openmrs.module.xreports.NameValue;
 import org.openmrs.module.xreports.ReportParameter;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.api.XReportsService;
-import org.purcai.web.report.constants.LayoutConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
