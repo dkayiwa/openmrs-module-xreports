@@ -72,6 +72,8 @@
     
 <div id="formatXml" style="visibility:hidden;">${formatXml}</div>
 
+<div id="imagePath" style="visibility:hidden;">images</div>
+
 <script language="javascript">
 	
 	var PurcformsText = {

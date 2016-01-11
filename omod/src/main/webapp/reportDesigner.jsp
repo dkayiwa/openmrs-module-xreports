@@ -66,6 +66,7 @@
     <div id="fileOpenUrlSuffix" style="visibility:hidden;">moduleServlet/xreports/fileOpenServlet</div>
     <div id="fileSaveUrlSuffix" style="visibility:hidden;">moduleServlet/xreports/fileSaveServlet</div>
     <div id="uploadImageUrlSuffix" style="visibility:hidden;">/moduleServlet/xreports/imageUploadServlet</div>
+    <div id="imagePath" style="visibility:hidden;">images</div>
     
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
     <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
