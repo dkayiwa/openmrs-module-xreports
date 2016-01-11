@@ -766,6 +766,7 @@ public class PdfDocument {
 	    		String externalSource = element.getAttribute(LayoutConstants.PROPERTY_EXTERNALSOURCE);
 		    		
 	    		if (StringUtils.isNotBlank(externalSource)) {
+	    			externalSource = "images/" + externalSource;
 		    		float x = Float.parseFloat(left.substring(0, left.length() - 2));
 		    		float y = Float.parseFloat(top.substring(0, top.length() - 2));
 		    		float w = Float.parseFloat(width.substring(0, width.length() - 2));
