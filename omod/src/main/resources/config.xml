@@ -65,6 +65,10 @@
 		<servlet-name>fileSaveServlet</servlet-name>
 		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.FileSaveServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>imageUploadServlet</servlet-name>
+		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.ImageUploadServlet</servlet-class>
+	</servlet>
 	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>

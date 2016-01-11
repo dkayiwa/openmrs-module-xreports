@@ -35,11 +35,11 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class PdfDocument {
 	
-	private float imageDepth = 10;
+	private float imageDepth = 0;
 	private float DEPTH = -13;
 	
 	public PdfDocument() {
-		String depth = org.openmrs.api.context.Context.getAdministrationService().getGlobalProperty("xreports.image.depth", "10");
+		String depth = org.openmrs.api.context.Context.getAdministrationService().getGlobalProperty("xreports.image.depth", "0");
 		if (StringUtils.isNotBlank(depth)) {
 			imageDepth = Float.parseFloat(depth);
 		}
@@ -798,7 +798,8 @@ public class PdfDocument {
 		    		}
 		    		
 		    		float xpos = ((x + parentLeft) * 72) / denominator;
-		    	    float ypos = bottom - (((y + parentTop - diff) * 72) / denominator);
+		    	    //float ypos = bottom - (((y + parentTop - diff) * 72) / denominator);
+		    		float ypos = bottom - (((y + h + parentTop) * 72) / denominator);
 		    	    ypos += imageDepth; //DEPTH;
 		    	    float lengthw = (w * 72) / denominator;
 		    	    float lengthh = (h * 72) / denominator;
@@ -808,7 +809,7 @@ public class PdfDocument {
 		    	    		realPath += File.separator;
 		    	    	}
 			    	    Image image = Image.getInstance(realPath + externalSource);
-			            image.setAbsolutePosition(xpos, ypos - 80);
+			            image.setAbsolutePosition(xpos, ypos);
 			            image.scaleAbsolute(lengthw, lengthh);
 		
 			            document.add(image);

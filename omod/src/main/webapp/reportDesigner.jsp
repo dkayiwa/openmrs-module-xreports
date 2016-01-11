@@ -65,6 +65,7 @@
     <div id="exportPdfUrlSuffix" style="visibility:hidden;">moduleServlet/xreports/exportPdfServlet?</div>
     <div id="fileOpenUrlSuffix" style="visibility:hidden;">moduleServlet/xreports/fileOpenServlet</div>
     <div id="fileSaveUrlSuffix" style="visibility:hidden;">moduleServlet/xreports/fileSaveServlet</div>
+    <div id="uploadImageUrlSuffix" style="visibility:hidden;">/moduleServlet/xreports/imageUploadServlet</div>
     
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
     <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
@@ -285,7 +286,8 @@
     	    	saveArchive: "<spring:message code="xreports.saveArchive" />",
            		selectArchive: "<spring:message code="xreports.selectArchive" />",
            		archiveSaveSuccess: "<spring:message code="xreports.archiveSaveSuccess" />",
-           		deleteArchive: "<spring:message code="xreports.deleteArchive" />"
+           		deleteArchive: "<spring:message code="xreports.deleteArchive" />",
+           		uploadImage: "<spring:message code="xreports.uploadImage" />"
     	};
 
     	function isUserAuthenticated(){
