@@ -415,7 +415,7 @@ public class PdfDocument {
 	    		float w = Float.parseFloat(width.substring(0, width.length() - 2));
 	    		float bw = 0f;
 	    		if (StringUtils.isNotBlank(borderWidth)) {
-	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2));
+	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2)) / 2;
 	    		}
 	    		
 	    		//begin new
@@ -499,7 +499,7 @@ public class PdfDocument {
 	    		float h = Float.parseFloat(height.substring(0, height.length() - 2));
 	    		float bw = 0f;
 	    		if (StringUtils.isNotBlank(borderWidth)) {
-	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2));
+	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2)) / 2;
 	    		}
 	    		
 	    		//begin new
@@ -576,7 +576,7 @@ public class PdfDocument {
 	    		float h = Float.parseFloat(height.substring(0, height.length() - 2));
 	    		float bw = 0f;
 	    		if (StringUtils.isNotBlank(borderWidth)) {
-	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2));
+	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2)) / 2;
 	    		}
 	    		
 	    		//begin new
@@ -670,7 +670,7 @@ public class PdfDocument {
 	    		float h = Float.parseFloat(height.substring(0, height.length() - 2));
 	    		float bw = 0f;
 	    		if (StringUtils.isNotBlank(borderWidth)) {
-	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2));
+	    			bw = Float.parseFloat(borderWidth.substring(0, borderWidth.length() - 2)) / 2;
 	    		}
 	    		
 	    		//begin new
