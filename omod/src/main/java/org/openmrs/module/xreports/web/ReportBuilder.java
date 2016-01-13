@@ -615,7 +615,11 @@ public class ReportBuilder {
 			}
 		}
 		
-		root.setAttribute("Height", (pageHeight * noPages) + "px");
+		s = root.getAttribute("Height");
+		int height = (Integer.parseInt(s.substring(0, s.length() - 2)));
+		if (height < (pageHeight * noPages)) {
+			root.setAttribute("Height", (pageHeight * noPages) + "px");
+		}
 	}
 	
 	private void processDesignItemValues(Document doc) throws Exception {
