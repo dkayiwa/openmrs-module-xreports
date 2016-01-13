@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebUtil;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,7 @@ public class ImageUploadServlet extends HttpServlet {
 				if (uploadedFile != null && !uploadedFile.isEmpty()) {
 					String filename = WebUtil.stripFilename(uploadedFile.getOriginalFilename());
 					String pathName = request.getSession().getServletContext().getRealPath("");
+					Context.getAdministrationService().setGlobalProperty("xreports.imagesBaseFolder", pathName);
 					if (!pathName.endsWith(File.separator)) {
 						pathName += File.separator;
 					}

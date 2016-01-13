@@ -70,6 +70,12 @@
 		<servlet-class>${project.parent.groupId}.${project.parent.artifactId}.web.servlet.ImageUploadServlet</servlet-class>
 	</servlet>
 	
+	<globalProperty>
+		<property>xreports.imagesBaseFolder</property>
+		<defaultValue></defaultValue>
+		<description>Path where the images folder is found. Is set whenever you upload an image from the report designer.</description>
+	</globalProperty>
+	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
 		XReport.hbm.xml

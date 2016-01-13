@@ -44,7 +44,8 @@ public class XReportRenderer extends ReportDesignRenderer /*implements WebReport
 			String xml = reports.get(0).getXml();
 			Document doc = DOMUtil.fromString2Doc(xml);
 			xml = new ReportBuilder().getReportData(reportData, doc);
-			new PdfDocument().writeFromXml(out, xml, "");
+			String path = Context.getAdministrationService().getGlobalProperty("xreports.imagesBaseFolder", "");
+			new PdfDocument().writeFromXml(out, xml, path);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
