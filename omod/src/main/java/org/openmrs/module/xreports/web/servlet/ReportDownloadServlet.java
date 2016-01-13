@@ -40,6 +40,7 @@ import org.openmrs.module.reporting.dataset.definition.SimpleIndicatorDataSetDef
 import org.openmrs.module.reporting.dataset.definition.SimplePatientDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
+import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.xreports.DOMUtil;
@@ -299,7 +300,14 @@ public class ReportDownloadServlet extends HttpServlet {
 				}
 			}
 			else if (def instanceof SqlDataSetDefinition) {
-				List<String> columns = Context.getService(XReportsService.class).getColumns(((SqlDataSetDefinition) def).getSqlQuery());
+				
+				String sql = ((SqlDataSetDefinition) def).getSqlQuery();
+				List<Parameter> parameters = def.getParameters();
+				for (Parameter parameter : parameters) {
+					sql = sql.replace(":" + parameter.getName(), "0");
+				}
+				
+				List<String> columns = Context.getService(XReportsService.class).getColumns(sql);
 				for (String col : columns) {
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
@@ -307,7 +315,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					}
 					else {
 						id = getNextId(id);
-						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col + "' binding='" + col + "' text='" + col + "' sourceType='Custom' />";
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col + "' binding='" + col + "' text='10' sourceType='Custom' />";
 					}
 				}
 			}
