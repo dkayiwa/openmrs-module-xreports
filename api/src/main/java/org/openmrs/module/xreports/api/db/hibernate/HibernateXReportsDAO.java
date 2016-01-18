@@ -213,7 +213,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 			}
 		}
 		catch (SQLException ex) {
-			log.error("Failed to get column labels", ex);
+			log.error("Failed to get column labels: " + ex.getMessage(), ex);
 		}
 		return columns;
 	}
