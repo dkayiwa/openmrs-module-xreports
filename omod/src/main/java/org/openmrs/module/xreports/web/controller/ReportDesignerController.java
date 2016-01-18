@@ -57,13 +57,15 @@ public class ReportDesignerController {
 		
 		ReportService rs = Context.getService(ReportService.class);
 		ReportDesign design = rs.getReportDesignByUuid(reportDesignUuid);
-		ReportDefinition reportDef = design.getReportDefinition();
-		XReportsService service = Context.getService(XReportsService.class);
-		List<XReport> reports = service.getReportsByExternalUuid(reportDef.getUuid());
-		if (reports != null && reports.size() > 0) {
-			return "redirect:/module/xreports/reportDesigner.form?reportId=" + reports.get(0).getReportId() + 
-					"&parameters=" + parameters + 
-					"&returnUrl=/module/reporting/reports/manageReportDesigns.form";
+		if (design != null) {
+			ReportDefinition reportDef = design.getReportDefinition();
+			XReportsService service = Context.getService(XReportsService.class);
+			List<XReport> reports = service.getReportsByExternalUuid(reportDef.getUuid());
+			if (reports != null && reports.size() > 0) {
+				return "redirect:/module/xreports/reportDesigner.form?reportId=" + reports.get(0).getReportId() + 
+						"&parameters=" + parameters + 
+						"&returnUrl=/module/reporting/reports/manageReportDesigns.form";
+			}
 		}
 		
 		return null;
