@@ -22,8 +22,8 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:git@github.com:dkayiwa/openmrs-module-xreports.git</connection>
-		<developerConnection>scm:git:git@github.com:dkayiwa/openmrs-module-xreports.git</developerConnection>
+		<connection>scm:https://github.com/dkayiwa/openmrs-module-xreports.git</connection>
+		<developerConnection>scm:https://github.com/dkayiwa/openmrs-module-xreports.git</developerConnection>
 		<url>https://github.com/dkayiwa/openmrs-module-xreports.git</url>
 	</scm>
 
