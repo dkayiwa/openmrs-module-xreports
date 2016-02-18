@@ -93,8 +93,8 @@
 		 
 		<dependency>
 		    <groupId>org.openmrs.module</groupId>
-		    <artifactId>serialization.xstream-api-2.0</artifactId>
-		    <version>0.2.10-SNAPSHOT</version>
+		    <artifactId>serialization.xstream-api</artifactId>
+		    <version>0.2.10</version>
 		    <type>jar</type>
 		    <scope>provided</scope>
 		</dependency>
