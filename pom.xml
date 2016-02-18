@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 	<name>XReports</name>
 	<description>A PDF Report Renderer with a WYSIWYG Report Designer</description>
-	<url>https://wiki.openmrs.org/display/docs/XReports+Module+Module</url>
+	<url>https://wiki.openmrs.org/display/docs/XReports+Module</url>
 	
 	<developers>
 		<developer>
