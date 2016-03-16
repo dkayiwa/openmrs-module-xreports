@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
@@ -58,6 +59,10 @@ public class ReportRunnerPageController {
 		String url = "/module/reporting/reports/reportHistory.form";
 		if (data == null) {
 			url = "/xreports/runReports.page" + (groupId != null ? "?groupId=" + groupId : "");
+		}
+		String patientId = request.getParameter("patientId");
+		if (StringUtils.isNotBlank(patientId)) {
+			url = "/coreapps/clinicianfacing/patient.page?patientId=" + patientId;
 		}
 		model.put("closeUrl", request.getContextPath() + url);
 		
