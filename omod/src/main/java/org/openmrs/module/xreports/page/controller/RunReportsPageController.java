@@ -3,6 +3,7 @@ package org.openmrs.module.xreports.page.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,12 +26,20 @@ public class RunReportsPageController {
 			@RequestParam(required = false, value = "groupId") Integer groupId,
 			@RequestParam(required = false, value = "reportId") Integer reportId,
 			@RequestParam(required = false, value = "reportTitle") String reportTitle,
-			HttpSession session,
+			HttpSession session, HttpServletRequest request,
 			UiSessionContext emrContext, UiUtils ui) {
 
 		emrContext.requireAuthentication();
 		
 		session.setAttribute(ReportingConstants.OPENMRS_REPORT_DATA, null);
+		
+		String patientId = request.getParameter("patientId");
+		if (StringUtils.isNotBlank(patientId)) {
+			String rptId = Context.getAdministrationService().getGlobalProperty("xreports.patientSummary.reportId");
+			if (StringUtils.isNotBlank(rptId)) {
+				return "redirect:/xreports/reportRunner.page?patientId=" + patientId + "&reportId=" + rptId;
+			}
+		}
 		
 		if (reportId != null) {
 			XReport report = Context.getService(XReportsService.class).getReport(reportId);

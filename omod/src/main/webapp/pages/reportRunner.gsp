@@ -2,32 +2,46 @@
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("xreports.run.reports.app.label") ]) 
 %>
 
+<% if (patientId) { %>
+	${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
+<% } %>
+
 <script type="text/javascript" src ='/${contextPath}/dwr/engine.js'></script>
 <script type="text/javascript" src ='/${contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src ='/${contextPath}/dwr/interface/DwrReportDesignerService.js'></script>
 
 <script type="text/javascript" src ='/${contextPath}/moduleResources/xreports/reportrunner/ReportRunner.nocache.js'></script>
 
-<script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("xreports.app.label")}",
-          link: "${ui.pageLink("xreports", "dashboard")}"
-        }
-        
-    	,{ label: "${ ui.message("xreports.run.reports.app.label")}",
-    	   link: "${ui.pageLink("xreports", "runReports")}"
-    	 }
-    	 
-    	 <% crumbs.each { crumb -> %>
-    	 	,{ label: "${crumb.name}",
-        	   link: "${ui.pageLink("xreports", "runReports", [groupId: crumb.value])}"
-        	 }
-    	 <% } %>
-    	 
-    	 ,{ label: "${formName}"}
-    ];
-</script>
+<% if (patientId) { %>
+	<script type="text/javascript">
+	    var breadcrumbs = [
+	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.patientId])}'},
+	    	,{ label: "${formName}"}
+	    ];
+	</script>
+<% } else { %>
+	<script type="text/javascript">
+	    var breadcrumbs = [
+	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+	        { label: "${ ui.message("xreports.app.label")}",
+	          link: "${ui.pageLink("xreports", "dashboard")}"
+	        }
+	        
+	    	,{ label: "${ ui.message("xreports.run.reports.app.label")}",
+	    	   link: "${ui.pageLink("xreports", "runReports")}"
+	    	 }
+	    	 
+	    	 <% crumbs.each { crumb -> %>
+	    	 	,{ label: "${crumb.name}",
+	        	   link: "${ui.pageLink("xreports", "runReports", [groupId: crumb.value])}"
+	        	 }
+	    	 <% } %>
+	    	 
+	    	 ,{ label: "${formName}"}
+	    ];
+	</script>
+<% } %>
 
 <style type="text/css">
 

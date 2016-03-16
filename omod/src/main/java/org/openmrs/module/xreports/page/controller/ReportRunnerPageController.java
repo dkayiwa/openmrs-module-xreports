@@ -81,6 +81,8 @@ public class ReportRunnerPageController {
 		}
 		
 		model.addAttribute("crumbs", crumbs);
+		
+		model.put("patientId", request.getParameter("patientId"));
 	}
 	
 	private XReport getXReport(ReportData reportData) {

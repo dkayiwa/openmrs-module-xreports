@@ -75,6 +75,11 @@
 		<defaultValue></defaultValue>
 		<description>Path where the images folder is found. Is set whenever you upload an image from the report designer.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>xreports.patientSummary.reportId</property>
+		<defaultValue></defaultValue>
+		<description>Report Id for the patient clinical summary.</description>
+	</globalProperty>
 	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
