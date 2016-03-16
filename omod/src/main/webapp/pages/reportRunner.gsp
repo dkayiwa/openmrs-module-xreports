@@ -498,7 +498,8 @@
        		sendTo: "${ ui.message("xreports.sendTo") }",
        		subject: "${ ui.message("xreports.subject") }",
        		message: "${ ui.message("xreports.message") }",
-       		report: "${ ui.message("xreports.report") }"
+       		report: "${ ui.message("xreports.report") }",
+       		rightClickPrint: "${ ui.message("xreports.rightClickPrint") }"
 	};
 
 	function isUserAuthenticated(){

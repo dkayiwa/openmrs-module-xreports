@@ -397,7 +397,8 @@
        		sendTo: "<spring:message code="xreports.sendTo" />",
        		subject: "<spring:message code="xreports.subject" />",
        		message: "<spring:message code="xreports.message" />",
-       		report: "<spring:message code="xreports.report" />"
+       		report: "<spring:message code="xreports.report" />",
+       		rightClickPrint: "<spring:message code="xreports.rightClickPrint" />"
 	};
 
 	function isUserAuthenticated(){
