@@ -34,6 +34,7 @@ public class ReportPageController {
 			@RequestParam(value = "reportId", required = false) Integer reportId,
             @RequestParam(value = "reportName", required = false) String name,
             @RequestParam(value = "identifier", required = false) String identifier,
+            @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
             @RequestParam(value = "group", required = false) Integer groupId,
             @RequestParam(value = "externalReportUuid", required = false) String externalReportUuid,
             HttpSession session, UiUtils ui) {
@@ -53,6 +54,7 @@ public class ReportPageController {
 		
 		report.setName(name);
 		report.setIdentifier(identifier);
+		report.setDisplayOrder(displayOrder);
 		report.setExternalReportUuid(externalReportUuid);
 		
 		if (groupId != null) {

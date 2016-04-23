@@ -14,6 +14,8 @@ public class XReportGroup extends BaseOpenmrsMetadata implements Serializable {
 	
 	private XReportGroup parentGroup;
 	
+	private Integer displayOrder;
+	
 	public XReportGroup() {
 		
 	}
@@ -62,6 +64,14 @@ public class XReportGroup extends BaseOpenmrsMetadata implements Serializable {
 	 */
 	public void setParentGroup(XReportGroup parentGroup) {
 		this.parentGroup = parentGroup;
+	}
+
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+	
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
 	}
 
 	/**

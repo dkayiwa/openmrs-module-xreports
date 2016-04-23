@@ -40,6 +40,7 @@ public class ReportGroupPageController {
 			@RequestParam(value = "groupId", required = false) Integer groupId,
             @RequestParam(value = "groupName", required = false) String name,
             @RequestParam(value = "identifier", required = false) String identifier,
+            @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
             @RequestParam(value = "parentGroup", required = false) Integer parentGroupId,
             HttpSession session, UiUtils ui) {
 
@@ -60,6 +61,7 @@ public class ReportGroupPageController {
 		
 		group.setName(name);
 		group.setIdentifier(identifier);
+		group.setDisplayOrder(displayOrder);
 		if (parentGroupId != null) {
 			group.setParentGroup(service.getReportGroup(parentGroupId));
 		}

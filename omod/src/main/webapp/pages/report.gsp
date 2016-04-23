@@ -35,6 +35,13 @@
     </p>
     
     <p>
+        <label for="displayOrder">
+            ${ui.message("xreports.displayOrder")}
+        </label>
+        <input id="displayOrder" name="displayOrder" <% if (report.displayOrder != null) { %> value="${report.displayOrder}" <% } %> />
+    </p>
+    
+    <p>
         <label for="group">
             ${ui.message("xreports.report.group")}
         </label>

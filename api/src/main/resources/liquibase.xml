@@ -77,4 +77,28 @@
         	referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
     
+    <changeSet id="add_column_xreports_report_display_order" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="xreports_report" columnName="display_order" />
+			</not>
+		</preConditions>
+		<comment>Adding display_order column to the xreports_report table</comment> 
+		<addColumn tableName="xreports_report">
+    		<column name="display_order" type="int"/>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="add_column_xreports_report_group_display_order" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="xreports_report_group" columnName="display_order" />
+			</not>
+		</preConditions>
+		<comment>Adding display_order column to the xreports_report_group table</comment> 
+		<addColumn tableName="xreports_report_group">
+    		<column name="display_order" type="int"/>
+		</addColumn>
+	</changeSet>
+    
 </databaseChangeLog>

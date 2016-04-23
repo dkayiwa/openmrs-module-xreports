@@ -24,6 +24,8 @@
 		<property name="identifier" type="java.lang.String" column="identifier" length="50" />
 		
 		<many-to-one name="parentGroup" class="XReportGroup" column="parent_group_id" />
+		
+		<property name="displayOrder" type="java.lang.Integer" column="display_order" />
 			
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />	
 	    <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>

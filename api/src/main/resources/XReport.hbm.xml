@@ -28,6 +28,8 @@
 	    <property name="xml" type="java.lang.String" column="xml" />
 	    
 	    <property name="externalReportUuid" type="java.lang.String" column="external_report_uuid" />
+	    
+	    <property name="displayOrder" type="java.lang.Integer" column="display_order" />
 			
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />	
 	    <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>

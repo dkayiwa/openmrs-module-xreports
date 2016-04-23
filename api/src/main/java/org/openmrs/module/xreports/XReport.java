@@ -36,6 +36,8 @@ public class XReport extends BaseOpenmrsMetadata implements Serializable {
 	
 	private String externalReportUuid;
 	
+	private Integer displayOrder;
+	
 	/**
 	 * @return the reportId
 	 */
@@ -105,6 +107,14 @@ public class XReport extends BaseOpenmrsMetadata implements Serializable {
     public void setExternalReportUuid(String externalReportUuid) {
     	this.externalReportUuid = externalReportUuid;
     }
+	
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+	
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
 
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
