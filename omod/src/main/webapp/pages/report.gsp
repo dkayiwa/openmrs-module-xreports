@@ -12,9 +12,14 @@
           link: "${ui.pageLink("xreports", "dashboard")}"
         },
         { label: "${ ui.message("xreports.manage.reports.app.label")}",
-          link: "${ui.pageLink("xreports", "manageReports")}"
+          link: "${ui.pageLink("xreports", "reports")}"
         },
-        { label: "${ ui.message("xreports.report.add.title")}"}
+        <% crumbs.each { crumb -> %>
+        	 	{ label: "${crumb.name}",
+	        	   link: "${ui.pageLink("xreports", "reports", [groupId: crumb.value])}"
+	        	},
+        <% } %>
+        { label: "${reportName}"}
     ];
 </script>
 
@@ -69,7 +74,7 @@
         </select>
     </p>
 
-    <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/reports.page'" />
+    <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/reports.page<% if (param.groupId) { %>?groupId=${param.groupId[0]}<% } %>'" />
     <input type="submit" class="confirm right" id="save-button" value="${ ui.message("general.save") }" />
 	<input type="hidden" id="reportId" name="reportId" <% if (report.reportId != null) { %> value="${report.reportId}" <% } %> />
 

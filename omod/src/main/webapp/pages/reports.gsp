@@ -7,8 +7,22 @@
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xreports.app.label")}",
           link: "${ui.pageLink("xreports", "dashboard")}"
-        },
-        { label: "${ ui.message("xreports.manage.reports.app.label")}"}
+        }
+        
+        <% if (crumbs.size() == 0) { %>
+        	,{ label: "${ ui.message("xreports.manage.reports.app.label")}"}
+        <% } else { %>
+        	,{ label: "${ ui.message("xreports.manage.reports.app.label")}",
+        	   link: "${ui.pageLink("xreports", "reports")}"
+        	 }
+        	 
+        	 <% crumbs.each { crumb -> %>
+        	 	,{ label: "${crumb.name}",
+	        	   link: "${ui.pageLink("xreports", "reports", [groupId: crumb.value])}"
+	        	 }
+        	 <% } %>
+        	 
+        <% } %>
     ];
 </script>
 
@@ -24,31 +38,51 @@
 
 </br></br>
 
-<table>
+<table id="reports">
     <thead>
 	    <tr>
 	        <th>${ ui.message("xreports.name")}</th>
 	        <th>${ ui.message("xreports.identifier")}</th>
-	        <th>${ ui.message("xreports.report.group")}</th>
 	        <th>${ ui.message("coreapps.actions") }</th>
 	    </tr>
     </thead>
     
     <tbody>
+    	<% if ((reports == null || (reports != null && reports.size() == 0) ) &&
+    			(groups == null || (groups != null && groups.size() == 0) )) { %>
+			<tr>
+				<td>${ ui.message("coreapps.none") }</td>
+			</tr>
+		<% } %>
+		
 	    <% reports.each { report -> %>
 		    <tr>
-		        <td>${report.name}</td>
-		        <td align="center">${report.identifier}</td>
-		        <td align="center"> <% if (report.group != null) { %> ${report.group.name} <% } %> </td>
+		        <td>
+		        	<a href='${ ui.pageLink("xreports", "report", [reportId:report.id, groupId:param.groupId]) }'> ${report.name} </a>
+		        </td>
+		        <td>
+		        	${report.identifier}
+		        </td>
 		        <td align="center">	
 					<i class="icon-table edit-action" title="${ ui.message("xreports.design") }"
-						onclick="location.href='/${ ui.contextPath() }/module/xreports/reportDesigner.form?reportId=${report.reportId}&refApp=true'"></i>
+						onclick="location.href='/${ ui.contextPath() }/module/xreports/reportDesigner.form?reportId=${report.reportId}&refApp=true<% if (param.groupId) { %>&groupId=${param.groupId[0]}<% } %>'"></i>
 					
 					<i class="icon-pencil edit-action" title="${ ui.message("coreapps.edit") }"
-						onclick="location.href='${ ui.pageLink("xreports", "report", [reportId:report.id]) }'"></i>
+						onclick="location.href='${ ui.pageLink("xreports", "report", [reportId:report.id, groupId:param.groupId]) }'"></i>
 							
 					<i class="icon-remove delete-action" title="${ ui.message("coreapps.delete") }" onclick="removeReport('${ report }', ${ report.id})"></i>
 				</td>
+		    </tr>
+	    <% } %>
+	    
+	    <% groups.each { group -> %>
+		    <tr>
+		        <td>
+		        	<a href="reports.page?groupId=${group.groupId}&refApp=true">${group.name}</a>
+		        </td>
+		        <td>
+		        	${group.identifier}
+		        </td>
 		    </tr>
 	    <% } %>
     </tbody>

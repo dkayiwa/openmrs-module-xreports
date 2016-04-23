@@ -16,12 +16,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class ReportDesignerController {
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/module/xreports/reportDesigner.form")
-	public void displayReportDesigner(HttpServletRequest request, ModelMap map) {
+	public void displayReportDesigner(HttpServletRequest request, 
+	                                  @RequestParam(required = false, value = "groupId") Integer groupId,
+	                                  ModelMap map) {
 		
 		AdministrationService service = Context.getAdministrationService();
 		
@@ -43,6 +46,9 @@ public class ReportDesignerController {
 		String returnUrl = request.getParameter("returnUrl");
 		if (StringUtils.isNotBlank(returnUrl)) {
 			url = returnUrl;
+		}
+		if (groupId != null) {
+			url = "/xreports/reports.page?groupId=" + groupId;
 		}
 		map.put("closeUrl", request.getContextPath() + url);
 	}
