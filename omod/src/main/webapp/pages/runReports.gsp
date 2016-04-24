@@ -44,7 +44,7 @@
 	    <% reports.each { report -> %>
 		    <tr>
 		        <td>
-		        	<a href="runReports.page?reportId=${report.reportId}<% if (param.groupId) { %>&groupId=${param.groupId[0]}<% } %>&refApp=true">${report.name}</a>
+		        	<a href="runReports.page?reportId=${report.reportId}<% if (param.groupId) { %>&groupId=${param.groupId[0]}<% } %>&refApp=true">${report.name} <% if (report.identifier) { %> &nbsp;&nbsp; [${report.identifier}] <% } %> </a>
 		        </td>
 		    </tr>
 	    <% } %>
