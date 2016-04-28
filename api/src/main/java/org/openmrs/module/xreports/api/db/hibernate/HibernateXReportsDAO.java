@@ -31,6 +31,7 @@ import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.api.db.XReportsDAO;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * It is a default implementation of {@link XReportsDAO}.
@@ -201,7 +202,7 @@ public class HibernateXReportsDAO implements XReportsDAO {
 		
 		List<String> columns = new ArrayList<String>();
 		
-		Connection con = sessionFactory.getCurrentSession().connection();
+		Connection con = getConnection();
 		
 		try {
 			Statement statement = con.createStatement();
@@ -217,4 +218,15 @@ public class HibernateXReportsDAO implements XReportsDAO {
 		}
 		return columns;
 	}
+	
+	private Connection getConnection() {
+        try {
+            // reflective lookup to bridge between Hibernate 3.x and 4.x
+            Method connectionMethod = getCurrentSession().getClass().getMethod("connection");
+            return (Connection) ReflectionUtils.invokeMethod(connectionMethod, getCurrentSession());
+        }
+        catch (NoSuchMethodException ex) {
+            throw new IllegalStateException("Cannot find connection() method on Hibernate session", ex);
+        }
+    }
 }
