@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -919,7 +920,16 @@ public class ReportBuilder {
 	        }
 	    }
 	    matcher.appendTail(buffer);
-	    return buffer.toString();
+	    String value = buffer.toString();
+	    
+	    //save the user from requiring the ${name} syntax
+	    if (value.equals(template)) {
+	    	for (Entry<String, String> entry : variables.entrySet()) {
+	    		value = value.replace(entry.getKey(), entry.getValue());
+	    	}
+	    }
+	    
+	    return value;
 	}
 		
 	private void buildParameterSql() {
