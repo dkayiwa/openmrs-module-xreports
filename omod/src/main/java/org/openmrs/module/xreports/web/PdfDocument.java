@@ -135,7 +135,7 @@ public class PdfDocument {
 		}
 	}
 	
-	private static void drawRectangle(PdfContentByte content, float x, float y, float width, float height, String bgolor, String bdcolor) {
+	protected static void drawRectangle(PdfContentByte content, float x, float y, float width, float height, String bgolor, String bdcolor, float lineWidth) {
 	    content.saveState();
 	    PdfGState state = new PdfGState();
 	    //state.setFillOpacity(0.3f);
@@ -149,9 +149,21 @@ public class PdfDocument {
 	    if (clr != null) {
 	    	content.setColorStroke(clr);
 	    }
+	    content.setLineWidth(lineWidth);
 	    content.rectangle(x, y, width, height);
 	    content.fillStroke();
 	    content.restoreState();
+	}
+	
+	private org.w3c.dom.Element getParentElement(org.w3c.dom.Element element) {
+		org.w3c.dom.Element parentElement = (org.w3c.dom.Element)element.getParentNode();
+		org.w3c.dom.Element prevParentElement = parentElement;
+		while (parentElement != null && (LayoutConstants.TYPE_TABLE.equals(parentElement.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) ||
+				LayoutConstants.TYPE_GROUPBOX.equals(parentElement.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)))) {
+			prevParentElement = parentElement;
+			parentElement = (org.w3c.dom.Element)parentElement.getParentNode();
+		}
+		return prevParentElement;
 	}
 
 	private void generate(org.w3c.dom.Document doc, Document document, PdfWriter writer, String realPath) throws Exception, BadElementException,
@@ -195,7 +207,7 @@ public class PdfDocument {
 		for (ReportItem reportItem : items) {
 	    	//org.w3c.dom.Element element = (org.w3c.dom.Element) nodes.item(index);
 			org.w3c.dom.Element element = reportItem.getNode();
-	    	org.w3c.dom.Element parentElement = (org.w3c.dom.Element)element.getParentNode();
+	    	org.w3c.dom.Element parentElement = getParentElement(element);
 
 	    	if (LayoutConstants.TYPE_LABEL.equals(element.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 	    		String text = element.getAttribute(LayoutConstants.PROPERTY_TEXT);
@@ -296,6 +308,7 @@ public class PdfDocument {
 	    	    else {
 	    	    	String bgcolor = element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR);
 	    	    	String bdcolor = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
+	    	    	float lineWidth = 0f;
 	    	    	if ("center".equals(textAlign) || "right".equals(textAlign)) {
 	    	    		int align = PdfContentByte.ALIGN_CENTER;
 	    	    		float w = size/2;
@@ -307,15 +320,21 @@ public class PdfDocument {
 	    	    		if (width.equals("100%")) {
 	    	    			w = (Float.parseFloat(parentWidth.substring(0, parentWidth.length() - 2)) * 72) / denominator;
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-	    	    			if (StringUtils.isBlank(bdcolor)) {
+	    	    			if (StringUtils.isBlank(bdcolor) && parentElement != null) {
 	    	    				bdcolor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	    	    			}
-	    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    	    			
+	    	    			if (parentElement != null) {
+		    	    			String bdWidth = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH);
+			    	    		if (StringUtils.isNotBlank(bdWidth)) {
+			    	    			lineWidth = Float.parseFloat(bdWidth.substring(0, bdWidth.length() - 2)) / 2;
+			    	    		}
+	    	    			}
 
 	    		    	    ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
 	    		    	    ypos += DEPTH;
 	    		    	    
-	    	    			drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    	    			drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor, lineWidth);
 	    	    			cb.showTextAligned(align, text, (xpos + w/2), ypos - 1, 0);
 	    	    		}
 	    	    		else {
@@ -326,12 +345,11 @@ public class PdfDocument {
 	    	    					height = "25px";
 	    	    				}
 		    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-		    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
-		    	    			
-		    	    			//ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
-		    		    	    //ypos += DEPTH;
+		    	    			if (StringUtils.isBlank(bdcolor) && parentElement != null) {
+		    	    				bdcolor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
+		    	    			}
 		    		    	    
-		    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
+		    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor, lineWidth);
 		    		    	    
 		    	    			if (align == PdfContentByte.ALIGN_CENTER) {
 		    	    				cb.showTextAligned(align, text, (xpos + w/2), ypos, 0);
@@ -352,12 +370,15 @@ public class PdfDocument {
     	    					height = "25px";
     	    				}
 	    	    			float h = Float.parseFloat(height.substring(0, height.length() - 2));
-	    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    	    			
+	    	    			if (StringUtils.isBlank(bdcolor) && parentElement != null) {
+	    	    				bdcolor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
+	    	    			}
 	    	    			
 	    	    			ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
 	    		    	    ypos += DEPTH;
 	    		    	    
-	    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    		    	    drawRectangle(cb, xpos, ypos, w, ((h * 72) / denominator), bgcolor, bdcolor, lineWidth);
     	    			}
 	    	    		
 			    	    cb.setTextMatrix(xpos, ypos);
@@ -741,6 +762,7 @@ public class PdfDocument {
 	            
 	            String bdColor = element.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
 	            String bgColor = element.getAttribute(LayoutConstants.PROPERTY_BACKGROUND_COLOR);
+	            float lineWidth = 0f;
     			if (StringUtils.isNotBlank(bgColor)) {
     				w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
 
@@ -748,13 +770,19 @@ public class PdfDocument {
 	    				if (StringUtils.isBlank(height)) {
 	    					height = "25px";
 	    				}
-    	    			h = Float.parseFloat(height.substring(0, height.length() - 2));
-    	    			//drawRectangle(cb, xpos, ypos - 6, w, ((h * 72) / denominator), bgcolor, bdcolor);
+	    				
+	    				if (StringUtils.isBlank(bdColor) && parentElement != null) {
+    	    				bdColor = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_COLOR);
+    	    			}
     	    			
-    	    			//ypos = (bottom * noPages) - (((h + parentTop - diff) * 72) / denominator);
-    		    	    //ypos += DEPTH;
+    	    			if (parentElement != null) {
+	    	    			String bdWidth = parentElement.getAttribute(LayoutConstants.PROPERTY_BORDER_WIDTH);
+		    	    		if (StringUtils.isNotBlank(bdWidth)) {
+		    	    			lineWidth = Float.parseFloat(bdWidth.substring(0, bdWidth.length() - 2)) / 2;
+		    	    		}
+    	    			}
     		    	    
-    		    	    drawRectangle(cb, xpos, ypos - lengthh, w, ((h * 72) / denominator), bgColor, bdColor);
+    		    	    drawRectangle(cb, xpos, ypos - lengthh, w, ((h * 72) / denominator), bgColor, bdColor, lineWidth);
 	    			}
     			}
 	    	}
@@ -864,7 +892,7 @@ public class PdfDocument {
 			this.node = node;
 			
 			String parentTop = null;
-			org.w3c.dom.Element parentElement = (org.w3c.dom.Element)node.getParentNode();
+			org.w3c.dom.Element parentElement = getParentElement(node);
 			if (LayoutConstants.TYPE_TABLE.equals(parentElement.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) ||
     				LayoutConstants.TYPE_GROUPBOX.equals(parentElement.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 				parentTop = parentElement.getAttribute(LayoutConstants.PROPERTY_TOP);
@@ -878,18 +906,57 @@ public class PdfDocument {
 				this.xpos = 0f;
 			}
 			
-			if (parentTop != null) {
-				this.xpos += Float.parseFloat(parentTop.substring(0, parentTop.length() - 2));
-			}
-			
 			//make background color transparent
 			if (LayoutConstants.TYPE_GROUPBOX.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
 				this.xpos = 0f;
+			}
+			
+			if (parentTop != null) {
+				this.xpos += Float.parseFloat(parentTop.substring(0, parentTop.length() - 2));
 			}
 		}
 		
 		@Override
 		public int compareTo(ReportItem o) {
+			
+			//make background color transparent
+			if (xpos.floatValue() == o.getXpos().floatValue()) {
+				if (LayoutConstants.TYPE_GROUPBOX.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+					if (LayoutConstants.TYPE_TABLE.equals(o.node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+						return 1;
+					}
+				}
+				else if (LayoutConstants.TYPE_GROUPBOX.equals(o.node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+					if (LayoutConstants.TYPE_TABLE.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+						return -1;
+					}
+				}
+			}
+			
+			//make background color transparent for vertical lines
+			if (LayoutConstants.TYPE_VERTICAL_LINE.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) &&
+					LayoutConstants.TYPE_GROUPBOX.equals(o.node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+				if (node.getParentNode() == o.node.getParentNode()) {
+					return 1;
+				}
+			}
+			else if (LayoutConstants.TYPE_VERTICAL_LINE.equals(o.node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) &&
+					LayoutConstants.TYPE_GROUPBOX.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+				if (node.getParentNode() == o.node.getParentNode()) {
+					return -1;
+				}
+			}
+			
+			//make background color transparent for tables
+			if (LayoutConstants.TYPE_TABLE.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) &&
+					LayoutConstants.TYPE_GROUPBOX.equals(o.node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+				//return 1;
+			}
+			else if (LayoutConstants.TYPE_TABLE.equals(o.node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE)) &&
+					LayoutConstants.TYPE_GROUPBOX.equals(node.getAttribute(LayoutConstants.PROPERTY_WIDGETTYPE))) {
+				//return -1;
+			}
+			
 			return xpos.compareTo(o.getXpos());
 		}
 		
