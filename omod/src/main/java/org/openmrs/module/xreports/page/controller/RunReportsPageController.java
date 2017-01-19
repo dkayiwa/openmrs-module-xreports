@@ -41,8 +41,10 @@ public class RunReportsPageController {
 			if (StringUtils.isNotBlank(rptId)) {
 				//return "redirect:/xreports/reportRunner.page?patientId=" + patientId + "&reportId=" + rptId;
 				
-				request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, null);
-				return "redirect:/moduleServlet/xreports/exportPdfServlet?patientId=" + patientId + "&reportId=" + rptId;
+				if (Context.getService(XReportsService.class).getReport(Integer.parseInt(rptId)) != null) {
+					request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, null);
+					return "redirect:/moduleServlet/xreports/exportPdfServlet?patientId=" + patientId + "&reportId=" + rptId;
+				}
 			}
 		}
 		
