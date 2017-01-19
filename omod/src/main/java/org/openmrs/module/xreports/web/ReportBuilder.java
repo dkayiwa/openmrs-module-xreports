@@ -1017,6 +1017,12 @@ public class ReportBuilder {
 			}
 			else {
 				Object value = row.getColumnValue(binding);
+				if (value == null && (binding.startsWith("patientIdentifierTypeId") || binding.startsWith("personAttributeTypeId"))) {
+					binding = item.getAttribute(DesignItem.WIDGET_PROPERTY_TEXT);
+					if (StringUtils.isNotBlank(binding)) {
+						value = row.getColumnValue(binding);
+					}
+				}
 				if (value instanceof Date) {
 					columnFoundInDataset = true;
 					return prefix + Context.getDateFormat().format(value) + suffix;
