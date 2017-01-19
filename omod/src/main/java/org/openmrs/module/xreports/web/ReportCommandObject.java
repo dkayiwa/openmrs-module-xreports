@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -38,6 +39,8 @@ public class ReportCommandObject {
 	private Map<String, String> expressions;
 	
 	private List<RenderingMode> renderingModes;	
+	
+	private Cohort cohort;
 	
 	public ReportCommandObject() {
 		userEnteredParams = new LinkedHashMap<String, Object>();
@@ -89,6 +92,14 @@ public class ReportCommandObject {
 		this.reportDefinition = reportDefinition;
 	}
 
+	public Cohort getCohort() {
+		return cohort;
+	}
+	
+	public void setCohort(Cohort cohort) {
+		this.cohort = cohort;
+	}
+	
 	public Mapped<CohortDefinition> getBaseCohort() {
 		return baseCohort;
 	}

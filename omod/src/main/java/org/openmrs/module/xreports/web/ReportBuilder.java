@@ -117,6 +117,9 @@ public class ReportBuilder {
 					Cohort baseCohort = Context.getService(CohortDefinitionService.class).evaluate(reportParamData.getBaseCohort(), context);
 					context.setBaseCohort(baseCohort);
 				}
+				else if (reportParamData.getCohort() != null) {
+					context.setBaseCohort(reportParamData.getCohort());
+				}
 				
 				Map<String, Object> params = getParameters(reportParamData);
 				if (params.size() > 0) {
@@ -150,6 +153,10 @@ public class ReportBuilder {
 	public Map<String, Object> getParameters(ReportCommandObject userParams) {
 		Map<String, Object> params = new LinkedHashMap<String, Object>();
 		ReportDefinition reportDefinition = userParams.getReportDefinition();
+		if (reportDefinition == null) {
+			return params;
+		}
+		
 		if (reportDefinition.getParameters() != null && (userParams.getUserEnteredParams() != null || userParams.getExpressions() != null)) {
 			for (Parameter parameter : reportDefinition.getParameters()) {
 				Object value = null;

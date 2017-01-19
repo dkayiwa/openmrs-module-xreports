@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.reporting.ReportingConstants;
@@ -18,6 +19,7 @@ import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
+import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +44,9 @@ public class RunReportsPageController {
 				//return "redirect:/xreports/reportRunner.page?patientId=" + patientId + "&reportId=" + rptId;
 				
 				if (Context.getService(XReportsService.class).getReport(Integer.parseInt(rptId)) != null) {
-					request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, null);
+					ReportCommandObject command = new ReportCommandObject();
+					command.setCohort(new Cohort(patientId));
+					request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, command);
 					return "redirect:/moduleServlet/xreports/exportPdfServlet?patientId=" + patientId + "&reportId=" + rptId;
 				}
 			}
