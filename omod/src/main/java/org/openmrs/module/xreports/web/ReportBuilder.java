@@ -91,13 +91,16 @@ public class ReportBuilder {
 		if (index == -1) {
 			index = queryStr.indexOf("formId=");
 		}
-		queryStr = queryStr.substring(0, index);
-		if (StringUtils.isNotBlank(queryStr)) {
-			String[] params = queryStr.split("&");
-			for (String param : params) {
-				String[] values = param.split("=");
-				if (values.length == 2) {
-					fieldValues.put(values[0], values[1]);
+		
+		if (index != -1) {
+			queryStr = queryStr.substring(0, index);
+			if (StringUtils.isNotBlank(queryStr)) {
+				String[] params = queryStr.split("&");
+				for (String param : params) {
+					String[] values = param.split("=");
+					if (values.length == 2) {
+						fieldValues.put(values[0], values[1]);
+					}
 				}
 			}
 		}
@@ -225,7 +228,7 @@ public class ReportBuilder {
 		}
 		DataSetRow row = iterator.next();
 		if (iterator.hasNext()) {
-			return null;
+			//return null;
 		}
 		return row;
 	}

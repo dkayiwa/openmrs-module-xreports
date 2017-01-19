@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.xreports.NameValue;
 import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportGroup;
+import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
@@ -26,8 +28,8 @@ public class RunReportsPageController {
 			@RequestParam(required = false, value = "groupId") Integer groupId,
 			@RequestParam(required = false, value = "reportId") Integer reportId,
 			@RequestParam(required = false, value = "reportTitle") String reportTitle,
-			HttpSession session, HttpServletRequest request,
-			UiSessionContext emrContext, UiUtils ui) {
+			HttpSession session, HttpServletRequest request, HttpServletResponse response,
+			UiSessionContext emrContext, UiUtils ui) throws Exception {
 
 		emrContext.requireAuthentication();
 		
@@ -37,7 +39,10 @@ public class RunReportsPageController {
 		if (StringUtils.isNotBlank(patientId)) {
 			String rptId = Context.getAdministrationService().getGlobalProperty("xreports.patientSummary.reportId");
 			if (StringUtils.isNotBlank(rptId)) {
-				return "redirect:/xreports/reportRunner.page?patientId=" + patientId + "&reportId=" + rptId;
+				//return "redirect:/xreports/reportRunner.page?patientId=" + patientId + "&reportId=" + rptId;
+				
+				request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, null);
+				return "redirect:/moduleServlet/xreports/exportPdfServlet?patientId=" + patientId + "&reportId=" + rptId;
 			}
 		}
 		

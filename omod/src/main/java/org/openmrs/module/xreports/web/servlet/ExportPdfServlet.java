@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -27,17 +28,26 @@ public class ExportPdfServlet extends HttpServlet {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+	
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		try {
 			String formId = request.getParameter("formId");
+			if (StringUtils.isBlank(formId)) {
+				formId = request.getParameter("reportId");
+			}
 	
 			String xml = Context.getService(XReportsService.class).getReport(Integer.parseInt(formId)).getXml();
 			if (xml == null) {
 				return;
 			}
 			
-			String filename = "document.pdf";
+			XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(formId));
+			String filename = report.getName() + ".pdf";
 			if (request.getParameter("docName") != null) {
 				filename = request.getParameter("docName") + ".pdf";
 				filename = filename.replace(" ", "-");
@@ -53,7 +63,6 @@ public class ExportPdfServlet extends HttpServlet {
 			response.setHeader("Cache-Control", "no-store");
 			response.setCharacterEncoding(XReportsConstants.DEFAULT_CHARACTER_ENCODING);
 			
-			XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(formId));
 			ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
 			new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData), request.getRealPath(""));
 		}
