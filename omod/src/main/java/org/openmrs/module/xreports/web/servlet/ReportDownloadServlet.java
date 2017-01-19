@@ -182,24 +182,26 @@ public class ReportDownloadServlet extends HttpServlet {
 				}
 				for (PersonAttributeType attribute : ((SimplePatientDataSetDefinition) def).getPersonAttributeTypes()) {
 					String property = StringEscapeUtils.escapeXml(attribute.getName());
-					Element node = map.get(property);
+					String binding = "personAttributeTypeId" + attribute.getId();
+					Element node = map.get(binding);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += copyAttributes(property, attribute.getId().toString(), node);
+						xml += copyAttributes(property, binding, node);
 					}
 					else {
 						id = getNextId(id);
-						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + attribute.getId() + "' text='" + property + "' sourceType='Custom' />";
+						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + binding + "' text='" + property + "' sourceType='Custom' />";
 					}
 				}
 				for (PatientIdentifierType identifier : ((SimplePatientDataSetDefinition) def).getIdentifierTypes()) {
 					String property = StringEscapeUtils.escapeXml(identifier.getName());
-					Element node = map.get(property);
+					String binding = "patientIdentifierTypeId" + identifier.getId();
+					Element node = map.get(binding);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
-						xml += copyAttributes(property, identifier.getId().toString(), node);
+						xml += copyAttributes(property, binding, node);
 					}
 					else {
 						id = getNextId(id);
-						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + identifier.getId() + "' text='" + property + "' sourceType='Custom' />";
+						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + property + "' binding='" + binding + "' text='" + property + "' sourceType='Custom' />";
 					}
 				}
 			}
@@ -330,11 +332,17 @@ public class ReportDownloadServlet extends HttpServlet {
 	}
 	
 	private String copyAttributes(String name, String binding, Element node) {
-		return "<DesignItem type='" + node.getAttribute("type") + "' id='" + node.getAttribute("id") +"' name='" + name +
-				"' binding='" + binding + "' text='" + node.getAttribute("text") + 
-				"' description='" + node.getAttribute("description") + "' prefix='" + node.getAttribute("prefix") +
-				"' suffix='" + node.getAttribute("suffix") + "' dataType='" + node.getAttribute("dataType") +
-				"' sourceValue='" + node.getAttribute("sourceValue") + "' otherData='" + node.getAttribute("otherData") +
+		return "<DesignItem type='" + node.getAttribute("type") + 
+				"' id='" + node.getAttribute("id") +
+				"' name='" + name +
+				"' binding='" + binding + 
+				"' text='" + StringEscapeUtils.escapeXml(node.getAttribute("text")) + 
+				"' description='" + StringEscapeUtils.escapeXml(node.getAttribute("description")) + 
+				"' prefix='" + StringEscapeUtils.escapeXml(node.getAttribute("prefix")) +
+				"' suffix='" + StringEscapeUtils.escapeXml(node.getAttribute("suffix")) + 
+				"' dataType='" + node.getAttribute("dataType") +
+				"' sourceValue='" + StringEscapeUtils.escapeXml(node.getAttribute("sourceValue")) + 
+				"' otherData='" + StringEscapeUtils.escapeXml(node.getAttribute("otherData")) +
 				"' sourceType='Custom' />";
 	}
 	
