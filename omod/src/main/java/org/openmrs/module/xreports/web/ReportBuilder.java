@@ -52,6 +52,7 @@ public class ReportBuilder {
 	public static final String GROUPING = "Grouping";
 	public static final String BINDING = "Binding";
 	public static final String PARAMETERS = "parameters";
+	public static final String OTHER_DATA = "otherData";
 	
 	public static final int SECOND_POSITION = 110;
 	public static final int SECOND_PAGE = 111;
@@ -186,14 +187,14 @@ public class ReportBuilder {
 	}
 	
 	private void displayReportData(ReportData reportData, Document doc) throws Exception {
-		String TYPE_XPOS = "2";
+		//String TYPE_XPOS = "2";
 		NodeList nodes = doc.getDocumentElement().getElementsByTagName("DesignItem");
 		for (int index = 0; index < nodes.getLength(); index++) {
 			Element node = (Element)nodes.item(index);
-			if (TYPE_XPOS.equals(node.getAttribute("type"))) {
+			//if (TYPE_XPOS.equals(node.getAttribute("type"))) {
 				fieldMapping.put(node.getAttribute("id"), node.getAttribute("binding"));
 				designItemMap.put(node.getAttribute("id"), node);
-			}
+			//}
 		}
 		
 		buildXPosItems(reportData, doc);
@@ -825,16 +826,17 @@ public class ReportBuilder {
 			if (StringUtils.isNotBlank(value))
 				widgetNode.setAttribute(DesignItem.WIDGET_PROPERTY_WIDTH, value);
 
-			setValue(item, widgetNode, row, dataSetName);
+			setValue(doc, item, widgetNode, row, dataSetName);
 		}
 		
 		//ptPosElement.getParentNode().removeChild(ptPosElement);
 	}
 	
-	private void setValue(Element item, Element widgetNode, DataSetRow row, String dataSetName) throws Exception {
-		String sourceType = item.getAttribute(SOURCE_TYPE);
+	private void setValue(Document doc, Element item, Element widgetNode, DataSetRow row, String dataSetName) throws Exception {
+		Element designItem = designItemMap.get(item.getAttribute("ID"));
+		String sourceType = designItem.getAttribute(SOURCE_TYPE);
 		if (SQL.equals(sourceType)) {
-			String sql = item.getAttribute(SOURCE_VALUE);
+			String sql = designItem.getAttribute(SOURCE_VALUE);
 			if (StringUtils.isNotBlank(sql)) {
 				Object value = null;
 				try {
@@ -846,20 +848,20 @@ public class ReportBuilder {
 					throw ex;
 				}
 				
-				String binding = item.getAttribute(BINDING);
+				String binding = designItem.getAttribute(BINDING);
 				fieldValues.put(binding, value != null ? value.toString() : "0");
 				
-				String prefix = item.getAttribute(PREFIX);
+				String prefix = designItem.getAttribute(PREFIX);
 				if (prefix == null || value == null) {
 					prefix = "";
 				}
-				String suffix = item.getAttribute(SUFFIX);
+				String suffix = designItem.getAttribute(SUFFIX);
 				if (suffix == null || value == null) {
 					suffix = "";
 				}
 				
 				String sValue = (value != null ? value.toString() : "");
-				String type = item.getAttribute("DataType");
+				String type = designItem.getAttribute("DataType");
 				if (value != null) {
 					if ("Number".equals(type)) {
 						sValue = numberFormat.format(value);
@@ -872,10 +874,68 @@ public class ReportBuilder {
 			}
 		}
 		else if (row != null) {
-			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, getValue(item, row, dataSetName));
+			String value = getValue(item, row, dataSetName);
+			widgetNode.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
+			
+			String otherData = designItem.getAttribute(OTHER_DATA);
+			if (StringUtils.isNotBlank(otherData)) {
+				String[] data = otherData.split(",");
+				if (data != null && data.length == 4) {
+					setOtherDataValues(doc, item, widgetNode, value, data);
+				}
+			}
 		}
 		else if (CUSTOM.equals(sourceType)) {
 			customItems.put(item, widgetNode);
+		}
+	}
+	
+	private void setOtherDataValues(Document doc, Element item, Element widgetNode, String value, String[] data) {
+		try {
+			String sXpos = item.getAttribute(DesignItem.PROPERTY_XPOS);
+			int xpos = (Integer.parseInt(sXpos.substring(0, sXpos.length() - 2)));
+			
+			String sYpos = item.getAttribute(DesignItem.PROPERTY_YPOS);
+			int ypos = (Integer.parseInt(sYpos.substring(0, sYpos.length() - 2)));
+			
+			int xcount = Integer.parseInt(data[0]);
+			int xlength = Integer.parseInt(data[1]);
+			int ycount = Integer.parseInt(data[2]);
+			int ylength = Integer.parseInt(data[3]);
+			
+			for (int x = 1; x< xcount; x++) {
+				Element copyNode = doc.createElement(DesignItem.NAME_ITEM);
+				widgetNode.getParentNode().appendChild(copyNode);
+				
+				copyAttributes(copyNode, item);
+				copyNode.setAttribute(LayoutConstants.PROPERTY_TOP, sYpos);
+				copyNode.setAttribute(LayoutConstants.PROPERTY_LEFT, (xpos + (x * xlength)) + "px");
+				copyNode.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
+				
+				
+				for (int y = 1; y< ycount; y++) {
+					if (x == 1) {
+						copyNode = doc.createElement(DesignItem.NAME_ITEM);
+						widgetNode.getParentNode().appendChild(copyNode);
+						
+						copyAttributes(copyNode, item);
+						copyNode.setAttribute(LayoutConstants.PROPERTY_LEFT, xpos + "px");
+						copyNode.setAttribute(LayoutConstants.PROPERTY_TOP, (ypos + (y * ylength)) + "px");
+						copyNode.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
+					}
+					
+					copyNode = doc.createElement(DesignItem.NAME_ITEM);
+					widgetNode.getParentNode().appendChild(copyNode);
+					
+					copyAttributes(copyNode, item);
+					copyNode.setAttribute(LayoutConstants.PROPERTY_LEFT, (xpos + (x * xlength)) + "px");
+					copyNode.setAttribute(LayoutConstants.PROPERTY_TOP, (ypos + (y * ylength)) + "px");
+					copyNode.setAttribute(LayoutConstants.PROPERTY_TEXT, value);
+				}
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
@@ -1002,23 +1062,24 @@ public class ReportBuilder {
 	
 	public String getValue(String binding, Element item, DataSetRow row, String dataSetName) {
 		String designItemId = item.getAttribute(DesignItem.PROPERTY_ID);
+		Element designItem = designItemMap.get(designItemId);
 		if (binding == null) {
 			binding = fieldMapping.get(designItemId);
 		}
 		if (binding != null) {
 
-			String prefix = item.getAttribute(PREFIX);
+			String prefix = designItem.getAttribute(PREFIX);
 			if (prefix == null) {
 				prefix = "";
 			}
-			String suffix = item.getAttribute(SUFFIX);
+			String suffix = designItem.getAttribute(SUFFIX);
 			if (suffix == null) {
 				suffix = "";
 			}
 			
 			if ("Numbering".equalsIgnoreCase(binding)) {
-				Element node = designItemMap.get(designItemId);
-				if (node != null && dataSetName.equals(((Element)node.getParentNode()).getAttribute("binding"))) {
+				//Element node = designItemMap.get(designItemId);
+				if (/*node*/designItem != null && dataSetName.equals(((Element)/*node*/designItem.getParentNode()).getAttribute("binding"))) {
 					return prefix + currentIndex + suffix;
 				}
 			}
