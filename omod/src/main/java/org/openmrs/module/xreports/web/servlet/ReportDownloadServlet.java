@@ -31,7 +31,7 @@ import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDef
 import org.openmrs.module.reporting.dataset.definition.CohortIndicatorDataSetDefinition.CohortIndicatorAndDimensionColumn;
 import org.openmrs.module.reporting.dataset.definition.CohortsWithVaryingParametersDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.CohortsWithVaryingParametersDataSetDefinition.Column;
-import org.openmrs.module.reporting.dataset.definition.DataExportDataSetDefinition;
+//import org.openmrs.module.reporting.dataset.definition.DataExportDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.LogicDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.RowPerObjectDataSetDefinition;
@@ -253,7 +253,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					}
 				}
 			}
-			else if (def instanceof DataExportDataSetDefinition) {
+			/*else if (def instanceof DataExportDataSetDefinition) {
 				for (ExportColumn col : ((DataExportDataSetDefinition) def).getDataExport().getColumns()) {
 					Element node = map.get(col);
 					if (node != null && ((Element)node.getParentNode()).getAttribute("binding").equals(e.getKey())) {
@@ -264,7 +264,7 @@ public class ReportDownloadServlet extends HttpServlet {
 						xml += "<DesignItem type='" + DesignItem.X_POS + "' id='" + id +"' name='" + col.getColumnName() + "' binding='" + col.getColumnName() + "' text='" + col.getColumnName() + "' sourceType='Custom' />";
 					}
 				}
-			}
+			}*/
 			else if (def instanceof LogicDataSetDefinition) {
 				for (LogicDataSetDefinition.Column col : ((LogicDataSetDefinition) def).getColumns()) {
 					Element node = map.get(col);
@@ -317,7 +317,7 @@ public class ReportDownloadServlet extends HttpServlet {
 					}
 					else {
 						id = getNextId(id);
-						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col + "' binding='" + col + "' text='10' sourceType='Custom' />";
+						xml += "<DesignItem type='" + DesignItem.PT_POS + "' id='" + id +"' name='" + col + "' binding='" + col + "' text='" + col + "' sourceType='Custom' />";
 					}
 				}
 			}
