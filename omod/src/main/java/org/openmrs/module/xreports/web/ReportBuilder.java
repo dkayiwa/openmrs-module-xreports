@@ -119,7 +119,14 @@ public class ReportBuilder {
 					context.setBaseCohort(baseCohort);
 				}
 				else if (reportParamData.getCohort() != null) {
-					context.setBaseCohort(reportParamData.getCohort());
+					if (reportDef.getParameters() != null && reportDef.getParameters().size() > 0) {
+						reportParamData.setReportDefinition(reportDef);
+						Integer id = reportParamData.getCohort().getMemberIds().iterator().next();
+						reportParamData.getUserEnteredParams().put(reportDef.getParameters().get(0).getName(), id);
+					}
+					else {
+						context.setBaseCohort(reportParamData.getCohort());
+					}
 				}
 				
 				Map<String, Object> params = getParameters(reportParamData);
