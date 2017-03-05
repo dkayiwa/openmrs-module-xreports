@@ -38,6 +38,8 @@ public class XReport extends BaseOpenmrsMetadata implements Serializable {
 	
 	private Integer displayOrder;
 	
+	private String extension;
+	
 	/**
 	 * @return the reportId
 	 */
@@ -114,6 +116,14 @@ public class XReport extends BaseOpenmrsMetadata implements Serializable {
 	
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
 	}
 
 	/**

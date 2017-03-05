@@ -231,14 +231,15 @@ public class FillParameterFormController extends SimpleFormController implements
 		}
 		
 		request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, command);
-		
-		XReport report = Context.getService(XReportsService.class).getReportsByExternalUuid(reportDefinition.getUuid()).get(0);
+
+		String id = request.getParameter("formId");
+		XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(id));
 		String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
 		if (renderingMode.getRenderer() instanceof XReportRenderer) {
-			return new ModelAndView("redirect:/moduleServlet/xreports/reportDownloadServlet?renderer=true&formId=" + report.getId());
+			return new ModelAndView("redirect:/moduleServlet/xreports/reportDownloadServlet?renderer=true&formId=" + id);
 		}
 		else {
-			return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + report.getId() + group);
+			return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + id + group);
 		}
 	}
 	

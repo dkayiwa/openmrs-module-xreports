@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appframework.AppFrameworkActivator;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.xreports.NameValue;
@@ -60,6 +61,7 @@ public class ReportPageController {
             @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
             @RequestParam(value = "group", required = false) Integer groupId,
             @RequestParam(value = "externalReportUuid", required = false) String externalReportUuid,
+            @RequestParam(value = "extension", required = false) String extension,
             HttpSession session, UiUtils ui) {
 
 		if (StringUtils.isBlank(name)) {
@@ -79,6 +81,7 @@ public class ReportPageController {
 		report.setIdentifier(identifier);
 		report.setDisplayOrder(displayOrder);
 		report.setExternalReportUuid(externalReportUuid);
+		report.setExtension(extension);
 		
 		if (groupId != null) {
 			report.setGroup(service.getReportGroup(groupId));
@@ -88,6 +91,8 @@ public class ReportPageController {
 		}
 		
 		service.saveReport(report);
+		
+		new AppFrameworkActivator().contextRefreshed();
 	
 		return "redirect:/xreports/reports.page" + (groupId != null ? "?groupId=" + groupId : "");
 	}

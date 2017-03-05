@@ -100,5 +100,17 @@
     		<column name="display_order" type="int"/>
 		</addColumn>
 	</changeSet>
+	
+	<changeSet id="add_column_xreports_report_extension" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="xreports_report" columnName="extension" />
+			</not>
+		</preConditions>
+		<comment>Adding extension column to the xreports_report table</comment> 
+		<addColumn tableName="xreports_report">
+    		<column name="extension" type="text"/>
+		</addColumn>
+	</changeSet>
     
 </databaseChangeLog>

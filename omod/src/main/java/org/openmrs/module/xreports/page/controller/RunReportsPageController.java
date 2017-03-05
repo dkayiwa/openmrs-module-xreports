@@ -39,10 +39,11 @@ public class RunReportsPageController {
 		
 		String patientId = request.getParameter("patientId");
 		if (StringUtils.isNotBlank(patientId)) {
-			String rptId = Context.getAdministrationService().getGlobalProperty("xreports.patientSummary.reportId");
+			String rptId = request.getParameter("reportId");
+			if (StringUtils.isBlank(rptId)) {
+				rptId = Context.getAdministrationService().getGlobalProperty("xreports.patientSummary.reportId");
+			}
 			if (StringUtils.isNotBlank(rptId)) {
-				//return "redirect:/xreports/reportRunner.page?patientId=" + patientId + "&reportId=" + rptId;
-				
 				if (Context.getService(XReportsService.class).getReport(Integer.parseInt(rptId)) != null) {
 					ReportCommandObject command = new ReportCommandObject();
 					command.setCohort(new Cohort(patientId));

@@ -73,6 +73,13 @@
         	<% } %>
         </select>
     </p>
+    
+    <p>
+        <label for="extension">
+            ${ui.message("xreports.extension")}
+        </label>
+        <textarea id="extension" name="extension"> <% if (report.extension != null) { %> ${report.extension} <% } %> </textarea>
+    </p>
 
     <input type="button" class="cancel" value="${ ui.message("general.cancel") }" onclick="javascript:window.location='/${ contextPath }/xreports/reports.page<% if (param.groupId) { %>?groupId=${param.groupId[0]}<% } %>'" />
     <input type="submit" class="confirm right" id="save-button" value="${ ui.message("general.save") }" />
