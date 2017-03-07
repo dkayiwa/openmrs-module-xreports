@@ -7,9 +7,12 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.xreports.DOMUtil;
 import org.openmrs.module.xreports.DesignItem;
 import org.w3c.dom.NodeList;
@@ -38,10 +41,34 @@ public class PdfDocument {
 	private float imageDepth = 0;
 	private float DEPTH = -13;
 	
+	private Map<String, BaseFont> fontMap;
+	
 	public PdfDocument() {
 		String depth = org.openmrs.api.context.Context.getAdministrationService().getGlobalProperty("xreports.image.depth", "0");
 		if (StringUtils.isNotBlank(depth)) {
 			imageDepth = Float.parseFloat(depth);
+		}
+		
+		fontMap = new HashMap<String, BaseFont>();
+		String fonts = Context.getAdministrationService().getGlobalProperty("xreports.pdf.fonts");
+		if (StringUtils.isBlank(fonts)) {
+			return;
+		}
+		
+		String[] map = fonts.split(",");
+		for (String item : map) {
+			String[] values = item.split(":");
+			if (values.length != 2) {
+				continue;
+			}
+			
+			try {
+				fontMap.put(values[0].trim(),
+				    BaseFont.createFont(values[1].trim(), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED));
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 	
@@ -69,9 +96,15 @@ public class PdfDocument {
 	}
 	
 	private BaseFont getBaseFont(String fontFamily, String fontStyle, String fontWeight, String textDecoration, String color) throws Exception {
+		
+		BaseFont bf = fontMap.get(fontFamily);
+		if (bf != null) {
+			return bf;
+		}
+		
 		try {
 			Font ft = getFont(fontFamily, fontStyle, fontWeight, textDecoration, color);
-			BaseFont bf = ft.getCalculatedBaseFont(false);
+			bf = ft.getCalculatedBaseFont(false);
 			if (bf != null) {
 				return bf;
 			}

@@ -80,6 +80,12 @@
 		<defaultValue></defaultValue>
 		<description>Report Id for the patient clinical summary.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>xreports.pdf.fonts</property>
+		<defaultValue></defaultValue>
+		<description>A comma separated list of fonts used when rendering pdf documents. 
+		This is an example: duster:/Library/Fonts/Chalkduster.ttf, Arial:/Library/Fonts/Arial Black.ttf</description>
+	</globalProperty>
 	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
