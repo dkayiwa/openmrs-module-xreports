@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>xreports</artifactId>
-	<version>1.10-SNAPSHOT</version>
+	<version>1.9-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>XReports</name>
 	<description>A PDF Report Renderer with a WYSIWYG Report Designer</description>
