@@ -57,7 +57,7 @@ public class PdfDocument {
 		
 		String[] map = fonts.split(",");
 		for (String item : map) {
-			String[] values = item.split(":");
+			String[] values = item.split("=");
 			if (values.length != 2) {
 				continue;
 			}
