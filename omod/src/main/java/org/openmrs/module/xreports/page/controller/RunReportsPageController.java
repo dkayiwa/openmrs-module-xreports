@@ -55,12 +55,15 @@ public class RunReportsPageController {
 		
 		if (reportId != null) {
 			XReport report = Context.getService(XReportsService.class).getReport(reportId);
-			String uuid = report.getExternalReportUuid();
-			if (StringUtils.isNotBlank(uuid)) {
-				ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
-				ReportDefinition reportDef = rds.getDefinitionByUuid(uuid);
-				if (reportDef != null && reportDef.getParameters().size() > 0) {
-					return "redirect:/xreports/reportParameter.page?reportId=" + reportId + (groupId != null ? "&groupId=" + groupId : "");
+			if (report != null) {
+				String uuid = report.getExternalReportUuid();
+				if (StringUtils.isNotBlank(uuid)) {
+					ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
+					ReportDefinition reportDef = rds.getDefinitionByUuid(uuid);
+					if (reportDef != null && reportDef.getParameters().size() > 0) {
+						return "redirect:/xreports/reportParameter.page?reportId=" + reportId
+						        + (groupId != null ? "&groupId=" + groupId : "");
+					}
 				}
 			}
 			return "redirect:/xreports/reportRunner.page?reportId=" + reportId + (groupId != null ? "&groupId=" + groupId : "");
