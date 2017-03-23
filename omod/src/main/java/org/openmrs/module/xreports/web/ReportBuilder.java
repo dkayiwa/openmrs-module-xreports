@@ -841,6 +841,9 @@ public class ReportBuilder {
 	
 	private void setValue(Document doc, Element item, Element widgetNode, DataSetRow row, String dataSetName) throws Exception {
 		Element designItem = designItemMap.get(item.getAttribute("ID"));
+		if (designItem == null) {
+			return;
+		}
 		String sourceType = designItem.getAttribute(SOURCE_TYPE);
 		if (SQL.equals(sourceType)) {
 			String sql = designItem.getAttribute(SOURCE_VALUE);
