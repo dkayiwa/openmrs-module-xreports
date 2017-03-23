@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,11 +66,13 @@ public class FillParameterFormController extends SimpleFormController implements
 	/**
 	 * @see BaseCommandController#initBinder(HttpServletRequest, ServletRequestDataBinder)
 	 */
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		//super.initBinder(request, binder);
 		binder.registerCustomEditor(Mapped.class, new MappedEditor());
 	}
 	
+	@Override
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
 		return c == ReportCommandObject.class;
@@ -112,7 +115,7 @@ public class FillParameterFormController extends SimpleFormController implements
 			}
 			if (requiredParams.size() > 0) {
 				for (Iterator<String> iterator = requiredParams.iterator(); iterator.hasNext();) {
-					String parameterName = (String) iterator.next();
+					String parameterName = iterator.next();
 					if (StringUtils.hasText(command.getExpressions().get(parameterName))) {
 						String expression = command.getExpressions().get(parameterName);
 						if (!EvaluationUtil.isExpression(expression)){
@@ -182,7 +185,21 @@ public class FillParameterFormController extends SimpleFormController implements
 					}
 				}
 			}
-			command.setRenderingModes(reportService.getRenderingModes(command.getReportDefinition()));
+			
+			//make the xreports renderer the default selection
+			RenderingMode xreportsMode = null;
+			List<RenderingMode> renderingModes = reportService.getRenderingModes(command.getReportDefinition());
+			for (RenderingMode mode : renderingModes) {
+				if (mode.getRenderer() instanceof XReportRenderer) {
+					xreportsMode = mode;
+					break;
+				}
+			}
+			if (xreportsMode != null) {
+				renderingModes.remove(xreportsMode);
+				renderingModes.add(0, xreportsMode);
+			}
+			command.setRenderingModes(renderingModes);
 		}
 		return command;
 	}
