@@ -52,7 +52,6 @@ import org.openmrs.module.xreports.web.PdfDocument;
 import org.openmrs.module.xreports.web.ReportBuilder;
 import org.openmrs.module.xreports.web.ReportCommandObject;
 import org.openmrs.module.xreports.web.util.WebUtil;
-import org.openmrs.reporting.export.ExportColumn;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -70,6 +69,7 @@ public class ReportDownloadServlet extends HttpServlet {
 	private List<String> idlist;
 	private List<Element> customItems;
 	
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		PrintWriter writer = null;
@@ -107,22 +107,24 @@ public class ReportDownloadServlet extends HttpServlet {
 				}
 			}
 			else if ("true".equals(request.getParameter("renderer"))) {
-				ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
-
-				String filename = DateUtil.formatDate(new Date(), "yyyy-MM-dd-HHmmss");
-				filename = reportParamData.getReportDefinition().getName() + "_" + filename + ".pdf";;
-	            
-				response.setHeader(XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
-						XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + WebUtil.getXmlToken(filename));
-				response.setContentType(XReportsConstants.CONTENT_TYPE_PDF);
-				
-				response.setHeader("Cache-Control", "no-cache");
-				response.setHeader("Pragma", "no-cache");
-				response.setDateHeader("Expires", -1);
-				response.setHeader("Cache-Control", "no-store");
-				response.setCharacterEncoding(XReportsConstants.DEFAULT_CHARACTER_ENCODING);
-				
-				new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData), request.getRealPath(""));
+				if (StringUtils.isNotBlank(xml)) {
+					ReportCommandObject reportParamData = (ReportCommandObject)request.getSession().getAttribute(XReportsConstants.REPORT_PARAMETER_DATA);
+	
+					String filename = DateUtil.formatDate(new Date(), "yyyy-MM-dd-HHmmss");
+					filename = reportParamData.getReportDefinition().getName() + "_" + filename + ".pdf";
+		            
+					response.setHeader(XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
+							XReportsConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + WebUtil.getXmlToken(filename));
+					response.setContentType(XReportsConstants.CONTENT_TYPE_PDF);
+					
+					response.setHeader("Cache-Control", "no-cache");
+					response.setHeader("Pragma", "no-cache");
+					response.setDateHeader("Expires", -1);
+					response.setHeader("Cache-Control", "no-store");
+					response.setCharacterEncoding(XReportsConstants.DEFAULT_CHARACTER_ENCODING);
+					
+					new PdfDocument().writeFromXml(response.getOutputStream(), new ReportBuilder().build(xml, request.getQueryString(), report, reportParamData), request.getRealPath(""));
+				}
 				
 				return;
 			}
