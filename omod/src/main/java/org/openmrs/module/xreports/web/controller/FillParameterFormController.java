@@ -39,9 +39,11 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.module.xreports.XReport;
 import org.openmrs.module.xreports.XReportsConstants;
 import org.openmrs.module.xreports.api.XReportsService;
 import org.openmrs.module.xreports.web.ReportCommandObject;
+import org.openmrs.module.xreports.web.XReportPdfRenderer;
 import org.openmrs.module.xreports.web.XReportRenderer;
 import org.quartz.CronExpression;
 import org.springframework.util.StringUtils;
@@ -191,7 +193,7 @@ public class FillParameterFormController extends SimpleFormController implements
 			RenderingMode xreportsMode = null;
 			List<RenderingMode> renderingModes = reportService.getRenderingModes(command.getReportDefinition());
 			for (RenderingMode mode : renderingModes) {
-				if (mode.getRenderer() instanceof XReportRenderer) {
+				if (mode.getRenderer() instanceof XReportPdfRenderer) {
 					xreportsMode = mode;
 					break;
 				}
@@ -251,13 +253,15 @@ public class FillParameterFormController extends SimpleFormController implements
 		request.getSession().setAttribute(XReportsConstants.REPORT_PARAMETER_DATA, command);
 
 		String id = request.getParameter("formId");
-		Context.getService(XReportsService.class).getReport(Integer.parseInt(id));
 		if (renderingMode.getRenderer() instanceof XReportRenderer) {
+			XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(id));
+			String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
+			return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + id + group);
+		}
+		else if (renderingMode.getRenderer() instanceof XReportPdfRenderer) {
 			return new ModelAndView("redirect:/moduleServlet/xreports/reportDownloadServlet?renderer=true&formId=" + id);
 		}
 		else {
-			//return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + id + group);
-			
 			ReportService rs = Context.getService(ReportService.class);
 			
 			ReportRequest rr = null;
