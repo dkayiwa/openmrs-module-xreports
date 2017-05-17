@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>xreports</artifactId>
-	<version>1.10.1-SNAPSHOT</version>
+	<version>1.10.1</version>
 	<packaging>pom</packaging>
 	<name>XReports</name>
 	<description>A PDF Report Renderer with a WYSIWYG Report Designer</description>
@@ -25,7 +25,7 @@
 		<connection>scm:git:git@github.com:dkayiwa/openmrs-module-xreports.git</connection>
 		<developerConnection>scm:git:git@github.com:dkayiwa/openmrs-module-xreports.git</developerConnection>
 		<url>https://github.com/dkayiwa/openmrs-module-xreports.git</url>
-	  <tag>HEAD</tag>
+	  <tag>1.10.1</tag>
   </scm>
 
 	<modules>
