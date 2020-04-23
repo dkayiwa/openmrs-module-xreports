@@ -46,6 +46,7 @@ public class ReportBuilder {
 	public static final String SOURCE_TYPE = "SourceType";
 	public static final String PREFIX = "Prefix";
 	public static final String SUFFIX = "Suffix";
+	public static final String DATATYPE = "DataType";
 	public static final String SOURCE_VALUE = "SourceValue";
 	public static final String SQL = "SQL";
 	public static final String CUSTOM = "Custom";
@@ -53,6 +54,8 @@ public class ReportBuilder {
 	public static final String BINDING = "Binding";
 	public static final String PARAMETERS = "parameters";
 	public static final String OTHER_DATA = "otherData";
+
+	public static final String DATATYPE_CURRENTY = "Currency";
 	
 	public static final int SECOND_POSITION = 110;
 	public static final int SECOND_PAGE = 111;
@@ -230,9 +233,10 @@ public class ReportBuilder {
 				
 				buildPtPosItems(doc, (Element)node, row, dataSetName);
 				
-				if (columnFoundInDataset) {
+				//Allow ptPos items coming from more than one dataset.
+				/*if (columnFoundInDataset) {
 					break;
-				}
+				}*/
 			}
 		}
 	}
@@ -1078,11 +1082,11 @@ public class ReportBuilder {
 		}
 		if (binding != null) {
 
-			String prefix = designItem.getAttribute(PREFIX);
+			String prefix = item.getAttribute(PREFIX);
 			if (prefix == null) {
 				prefix = "";
 			}
-			String suffix = designItem.getAttribute(SUFFIX);
+			String suffix = item.getAttribute(SUFFIX);
 			if (suffix == null) {
 				suffix = "";
 			}
@@ -1105,8 +1109,17 @@ public class ReportBuilder {
 					columnFoundInDataset = true;
 					return prefix + Context.getDateFormat().format(value) + suffix;
 				}
-				if (value != null) {
+				else if (value != null) {
 					columnFoundInDataset = true;
+					
+					String type = item.getAttribute("DataType");
+					if ("Number".equals(type)) {
+						return prefix + numberFormat.format(value) + suffix;
+					}
+					else if ("Currency".equals(type)) {
+						return prefix + currencyFormat.format(value) + suffix;
+					}
+					
 					return prefix + value.toString() + suffix;
 				}
 			}

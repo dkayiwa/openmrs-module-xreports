@@ -371,7 +371,9 @@ public class PdfDocument {
 	    	    			cb.showTextAligned(align, text, (xpos + w/2), ypos - 1, 0);
 	    	    		}
 	    	    		else {
-    	    				w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
+	    	    			if (StringUtils.isNotBlank(width)) {
+	    	    				w = (Float.parseFloat(width.substring(0, width.length() - 2)) * 72) / denominator;
+	    	    			}
 
 	    	    			if (StringUtils.isNotBlank(bgcolor) && StringUtils.isNotBlank(width)) {
 	    	    				if (StringUtils.isBlank(height)) {
@@ -393,6 +395,7 @@ public class PdfDocument {
 	    	    			}
 	    	    			else {
 	    	    				cb.showTextAligned(align, text, (xpos + w/2), ypos, 0);
+	    	    				//cb.showTextAligned(align, text, xpos + w, ypos, 0);
 	    	    			}
 	    	    		}
 	    	    	}
