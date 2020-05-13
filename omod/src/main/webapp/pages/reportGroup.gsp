@@ -15,10 +15,34 @@
           link: "${ui.pageLink("xreports", "reportGroups")}"
         },
         { label: "${ ui.message("xreports.reportGroup.add.title")}"}
+
     ];
+
+    function showMessage(form){
+        var x1 = document.getElementById("groupName").value;
+        var x3 = document.getElementById("displayOrder").value;
+//        alert(x1+" "+x2+" "+x3+" "+x4);
+        var valid = true;
+        var str;
+        if(isNaN(x3)){
+            valid = false;
+            str = "Please enter a number for Display Order";
+        }
+
+        if(x1.trim()===""){
+            valid = false;
+            str = "Name feild should not be empty";
+        }
+
+        if(!valid) {
+            alert(str);
+            return false;
+        }
+    }
+
 </script>
 
-<form method="POST" action="reportGroup.page">
+<form method="POST" action="reportGroup.page" onsubmit="return showMessage(this);">
 
     <p>
         <label for="groupName">
@@ -60,3 +84,4 @@
 	<input type="hidden" id="groupId" name="groupId" <% if (group.groupId != null) { %> value="${group.groupId}" <% } %> />
 
 </form>
+
