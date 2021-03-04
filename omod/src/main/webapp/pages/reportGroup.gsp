@@ -16,9 +16,26 @@
         },
         { label: "${ ui.message("xreports.reportGroup.add.title")}"}
     ];
+    
+    function validate() {
+    	var groupName = document.getElementById("groupName").value;
+    	var displayOrder = document.getElementById("displayOrder").value;
+    	var valid = true;
+    	
+    	if(groupName.trim() == ""){
+    		alert("Name should not be empty.");
+    		valid = false;
+    	}
+    	
+    	if(isNaN(displayOrder)){
+    		alert("Display Order must be a number.");
+    		valid = false;
+    	}
+    	return valid;
+    };
 </script>
 
-<form method="POST" action="reportGroup.page">
+<form method="POST" action="reportGroup.page" onsubmit = "return validate();">
 
     <p>
         <label for="groupName">
