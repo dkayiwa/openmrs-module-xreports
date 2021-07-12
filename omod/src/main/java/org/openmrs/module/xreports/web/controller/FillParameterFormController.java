@@ -256,7 +256,7 @@ public class FillParameterFormController extends SimpleFormController implements
 		if (renderingMode.getRenderer() instanceof XReportRenderer) {
 			XReport report = Context.getService(XReportsService.class).getReport(Integer.parseInt(id));
 			String group = report.getGroup() != null ? "&groupId=" + report.getGroup().getGroupId() : "";
-			return new ModelAndView("redirect:/xreports/reportRunner.page?reportId=" + id + group);
+			return new ModelAndView("redirect:/xreports/fillParameter.form?reportId=" + id + group);
 		}
 		else if (renderingMode.getRenderer() instanceof XReportPdfRenderer) {
 			return new ModelAndView("redirect:/moduleServlet/xreports/reportDownloadServlet?renderer=true&formId=" + id);
